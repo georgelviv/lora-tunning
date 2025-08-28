@@ -39,7 +39,6 @@ class Lora:
         if self.ser.in_waiting > 0:
           line = self.ser.readline().decode("utf-8", errors="ignore").strip()
           if line:
-            self.logger.info(line)
             self.serial_handler(line)
     except Exception as e:
       self.logger.error(f"Error in read_serial: {e}")
@@ -67,6 +66,12 @@ class Lora:
     self.write_serial("CONFIG_GET")
 
   def serial_handler(self, msg: str):
-    parse_msg(msg)
+    command, params = parse_msg(msg)
+    if command:
+      match command:
+        case "CONFIG_GET":
+          print("Handle config get", params)
+        case _:
+          self.logger.warning(f"Unknown command {command}")
 
       

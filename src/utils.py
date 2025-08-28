@@ -10,7 +10,7 @@ def parse_msg(msg: str) -> Tuple[str, List[Tuple[str, str]]]:
     if "," in params_str:
       params_pairs = params_str.split(",")
     elif params_str:
-      params_pairs = params_str
+      params_pairs = [params_str]
 
     for param_pair in params_pairs:
       key, val = param_pair.split("=", 1)
