@@ -1,13 +1,17 @@
+from typing import Dict
 import serial.tools.list_ports
 import logging
 import threading
-from .utils import parse_msg
+import asyncio
+from .utils import format_msg, parse_msg
 
 class Lora:
   def __init__(self, logger: logging.Logger, port_filter: str) -> None:
     self.logger: logging.Logger = logger
     self.ser = None
     self.thread = None
+    self.loop = asyncio.get_event_loop()
+    self.pending_futures: Dict[str, asyncio.Future] = {}
     self.running = False
 
     self.serial_port = self.find_serial_port(port_filter)
@@ -62,15 +66,32 @@ class Lora:
     else:
       self.logger.warning("Serial port is not open")
 
-  def config_get(self) -> None:
-    self.write_serial("CONFIG_GET")
+  async def config_get(self) -> None:
+    future = self.loop.create_future()
+    self.pending_futures["CONFIG_GET"] = future
+    msg = format_msg("CONFIG_GET")
+    self.write_serial(msg)
+    return await future
+  
+  async def ping(self, id: int) -> None:
+    future = self.loop.create_future()
+    self.pending_futures['PING'] = future
+    msg = format_msg("PING", [("ID", id)])
+    self.write_serial(msg)
+    return await future
 
   def serial_handler(self, msg: str):
     command, params = parse_msg(msg)
     if command:
       match command:
         case "CONFIG_GET":
-          print("Handle config get", params)
+          future = self.pending_futures.pop("CONFIG_GET", None)
+          if future and not future.done():
+             self.loop.call_soon_threadsafe(future.set_result, params)
+        case "PING_ACK":
+          future = self.pending_futures.pop("PING", None)
+          if future and not future.done():
+             self.loop.call_soon_threadsafe(future.set_result, params)
         case _:
           self.logger.warning(f"Unknown command {command}")
 

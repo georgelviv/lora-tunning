@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 
-def parse_msg(msg: str) -> Tuple[str, List[Tuple[str, str]]]:
+def parse_msg(msg: str) -> Tuple[str, List[Tuple[str, float]]]:
   command = None
   params = []
   if ";" in msg:
@@ -23,3 +23,9 @@ def parse_msg(msg: str) -> Tuple[str, List[Tuple[str, str]]]:
       params.append((key, val_conv))
 
   return (command, params)
+
+def format_msg(command: str, params: List[Tuple[str, float]] = []):
+  if not params:
+    return command
+  params_str = ",".join(f"{key}={value}" for key, value in params)
+  return f"{command};{params_str}"

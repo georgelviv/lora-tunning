@@ -6,8 +6,6 @@ class LoraTunning:
     self.logger: logging.Logger = self.getLogger()
     self.lora: Lora = Lora(self.logger, port_filter)
 
-    self.lora.config_get()
-
   def getLogger(self) -> logging.Logger:
     logging.basicConfig(
       level=logging.INFO,
@@ -15,4 +13,9 @@ class LoraTunning:
     )
 
     return logging.getLogger(__name__)
+
+  async def get_config(self):
+    return await self.lora.config_get()
   
+  async def ping(self):
+    return await self.lora.ping(id=1)
