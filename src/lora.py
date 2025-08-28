@@ -1,11 +1,11 @@
 import serial.tools.list_ports
 import logging
 import threading
+from .utils import parse_msg
 
-class LoraTunning:
-  def __init__(self, port_filter) -> None:
-    self.logger: logging.Logger = self.getLogger()
-
+class Lora:
+  def __init__(self, logger: logging.Logger, port_filter: str) -> None:
+    self.logger: logging.Logger = logger
     self.ser = None
     self.thread = None
     self.running = False
@@ -16,14 +16,6 @@ class LoraTunning:
       self.start_listener()
     else:
       self.logger.error("Serial port not found")
-
-  def getLogger(self) -> logging.Logger:
-    logging.basicConfig(
-      level=logging.INFO,
-      format='%(asctime)s [%(levelname)s] %(message)s'
-    )
-
-    return logging.getLogger(__name__)
   
   def find_serial_port(self, filter: str) -> str:
     ports = serial.tools.list_ports.comports()
@@ -33,7 +25,7 @@ class LoraTunning:
     return None
   
   def start_listener(self):
-    self.ser = serial.Serial(port=self.serial_port, baudrate=9600, timeout=1)
+    self.ser = serial.Serial(port=self.serial_port, baudrate=115200, timeout=1)
     self.running = True
     self.thread = threading.Thread(target=self.read_serial, daemon=True)
     self.thread.start()
@@ -45,9 +37,10 @@ class LoraTunning:
     try:
       while True:
         if self.ser.in_waiting > 0:
-          line = self.ser.readline().decode('utf-8', errors='ignore').strip()
+          line = self.ser.readline().decode("utf-8", errors="ignore").strip()
           if line:
-            self.logger.info("Received:", line)
+            self.logger.info(line)
+            self.serial_handler(line)
     except Exception as e:
       self.logger.error(f"Error in read_serial: {e}")
     finally:
@@ -59,3 +52,21 @@ class LoraTunning:
     if self.thread and self.thread.is_alive():
       self.thread.join(timeout=2)
     self.logger.info("Listener stopped")
+
+  def write_serial(self, data: str) -> None: 
+    if self.ser and self.ser.is_open:
+      try:
+        self.ser.write((data + "\r\n").encode("utf-8"))
+        self.logger.info(f"Sent: {data}")
+      except Exception as e:
+        self.logger.error(f"Error writing to serial: {e}")
+    else:
+      self.logger.warning("Serial port is not open")
+
+  def config_get(self) -> None:
+    self.write_serial("CONFIG_GET")
+
+  def serial_handler(self, msg: str):
+    parse_msg(msg)
+
+      

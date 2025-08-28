@@ -1,0 +1,1 @@
+`pytest` - to run tests

@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from lora_tunning import LoraTunning
+from src import LoraTunning
 
 load_dotenv(override=True)
 
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     while True:
       pass 
   except KeyboardInterrupt:
-    loraTunning.stop_listener()
+    loraTunning.lora.stop_listener()
 
 
   
