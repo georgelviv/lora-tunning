@@ -1,4 +1,4 @@
-from .utils import parse_msg, format_msg
+from .utils import parse_msg, format_msg, map_response_to_state, map_config_to_action, estimate_tx_current
 
 def test_parse_msg():
   assert parse_msg("CONFIG_GET;FW=868.00,BW=500") == ("CONFIG_GET", [("FW", 868), ("BW", 500)])
@@ -8,3 +8,39 @@ def test_parse_msg():
 def test_format_msg():
   assert format_msg("CONFIG_GET") == "CONFIG_GET"
   assert format_msg("CONFIG_SYNC", [("BW", 500)]) == "CONFIG_SYNC;BW=500"
+
+def test_map_response_to_state():
+  assert map_response_to_state([
+    ('ID', 1.0), ('DELAY', 151.0), ('RSSI', -32.0), ('SNR', 7.25), 
+    ('TOA', 36.0), ('BPS', 611.0), ('CHC', 1.0)
+  ]) ==  {
+    'bytesPerSecond': 611.0,
+    'chunksCount': 1.0,
+    'delay': 151.0,
+    'rssi': -32.0,
+    'snr': 7.25,
+    'timeOverAir': 36.0
+  }
+
+def test_map_config_to_action():
+  assert map_config_to_action([
+    ('FW', 869.0), ('BW', 500.0), ('SF', 8.0), ('CR', 8.0), 
+    ('TP', 10.0), ('IH', 0.0), ('HS', 10.0), ('PL', 10.0),
+    ('CL', 45.0), ('RT', 1.0)
+  ]) ==  {
+    'bandwidth': 500.0,
+    'coding_rate': 8,
+    'current_limit': 45,
+    'frequency': 869.0,
+    'header_size': 10,
+    'implicit_header': False,
+    'payload_length': 10,
+    'retries': 1,
+    'spreading_factor': 8,
+    'tx_power': 10
+  }
+
+def test_estimate_tx_current():
+  assert estimate_tx_current(20) == 120
+  assert estimate_tx_current(15) == 58
+  assert estimate_tx_current(10) == 24.5

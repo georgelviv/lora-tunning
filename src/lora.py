@@ -3,7 +3,7 @@ import serial.tools.list_ports
 import logging
 import threading
 import asyncio
-from .utils import format_msg, parse_msg
+from .utils import format_msg, map_config_to_action, map_response_to_state, parse_msg
 
 class Lora:
   def __init__(self, logger: logging.Logger, port_filter: str) -> None:
@@ -79,6 +79,13 @@ class Lora:
     msg = format_msg("PING", [("ID", id)])
     self.write_serial(msg)
     return await future
+  
+  async def config_sync(self, id: int, params) -> None:
+    future = self.loop.create_future()
+    self.pending_futures['CONFIG_SYNC'] = future
+    msg = format_msg("CONFIG_SYNC", [("ID", id), *params])
+    self.write_serial(msg)
+    return await future    
 
   def serial_handler(self, msg: str):
     command, params = parse_msg(msg)
@@ -87,11 +94,18 @@ class Lora:
         case "CONFIG_GET":
           future = self.pending_futures.pop("CONFIG_GET", None)
           if future and not future.done():
-             self.loop.call_soon_threadsafe(future.set_result, params)
+             parsed_params = map_config_to_action(params)
+             self.loop.call_soon_threadsafe(future.set_result, parsed_params)
         case "PING_ACK":
           future = self.pending_futures.pop("PING", None)
           if future and not future.done():
-             self.loop.call_soon_threadsafe(future.set_result, params)
+            parsed_params = map_response_to_state(params)
+            self.loop.call_soon_threadsafe(future.set_result, parsed_params)
+        case "CONFIG_SYNC_CHECK_ACK":
+          future = self.pending_futures.pop("CONFIG_SYNC", None)
+          if future and not future.done():
+            parsed_params = map_response_to_state(params)
+            self.loop.call_soon_threadsafe(future.set_result, parsed_params)
         case _:
           self.logger.warning(f"Unknown command {command}")
 

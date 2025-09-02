@@ -9,7 +9,7 @@ PORT_FILTER = os.getenv('PORT_FILTER')
 
 async def main():
   loraTunning = LoraTunning(PORT_FILTER)
-  result = await loraTunning.ping()
+  result = await loraTunning.sf_test()
   print(result)
   try:
     while True:
