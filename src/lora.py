@@ -3,6 +3,7 @@ import serial.tools.list_ports
 import logging
 import threading
 import asyncio
+from .models import Action, State
 from .utils import format_msg, map_config_to_action, map_response_to_state, parse_msg
 
 class Lora:
@@ -66,19 +67,21 @@ class Lora:
     else:
       self.logger.warning("Serial port is not open")
 
-  async def config_get(self) -> None:
+  async def config_get(self) -> Action:
     future = self.loop.create_future()
     self.pending_futures["CONFIG_GET"] = future
     msg = format_msg("CONFIG_GET")
     self.write_serial(msg)
-    return await future
+    action =  await future
+    return action
   
-  async def ping(self, id: int) -> None:
+  async def ping(self, id: int) -> State:
     future = self.loop.create_future()
     self.pending_futures['PING'] = future
     msg = format_msg("PING", [("ID", id)])
     self.write_serial(msg)
-    return await future
+    state = await future
+    return state
   
   async def config_sync(self, id: int, params) -> None:
     future = self.loop.create_future()

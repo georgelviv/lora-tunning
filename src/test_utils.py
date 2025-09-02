@@ -1,4 +1,4 @@
-from .utils import parse_msg, format_msg, map_response_to_state, map_config_to_action, estimate_tx_current
+from .utils import parse_msg, format_msg, map_response_to_state, map_config_to_action, estimate_tx_current, estimate_tx_energy
 
 def test_parse_msg():
   assert parse_msg("CONFIG_GET;FW=868.00,BW=500") == ("CONFIG_GET", [("FW", 868), ("BW", 500)])
@@ -37,10 +37,12 @@ def test_map_config_to_action():
     'payload_length': 10,
     'retries': 1,
     'spreading_factor': 8,
-    'tx_power': 10
+    'transmission_power': 10
   }
 
 def test_estimate_tx_current():
   assert estimate_tx_current(20) == 120
   assert estimate_tx_current(15) == 58
   assert estimate_tx_current(10) == 24.5
+
+  , 

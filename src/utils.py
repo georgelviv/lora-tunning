@@ -51,7 +51,7 @@ def map_config_to_action(config: List[Tuple[str, float]]) -> Action:
     bandwidth=float(data.get("BW", 0.0)),
     spreading_factor=int(data.get("SF", 0.0)),
     coding_rate=int(data.get("CR", 0.0)),
-    tx_power=int(data.get("TP", 0.0)),
+    transmission_power=int(data.get("TP", 0.0)),
     implicit_header=bool(data.get("IH", 0.0)),
     header_size=int(data.get("HS", 0.0)),
     payload_length=int(data.get("PL", 0.0)),
@@ -73,7 +73,10 @@ def estimate_tx_current(tx_power: int) -> float:
       interp_i = low_i + (high_i - low_i) * (tx_power - low_p) / (high_p - low_p)
       return interp_i
 
-# def dbm_to_mw(dbm: float) -> float:
-#   return 10 ** (dbm / 10.0)
+def estimate_tx_energy(tx_power_dbm: float, toa_s: float, current_limit: int, voltage_v: float = 3.3) -> float:
+  current_mA = estimate_tx_current(tx_power_dbm)
+  current_mA = min(current_limit, current_mA)
+  current_a = current_mA / 1000.0
+  energy_j = voltage_v * current_a * toa_s
 
-# def tx_energy(tx_power_dbm: int, toa: int, )
+  return energy_j
