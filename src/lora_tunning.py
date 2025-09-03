@@ -1,7 +1,7 @@
 import logging
 from .lora import Lora
 from .models import Action, State
-from .utils import estimate_tx_energy
+from .utils import estimate_tx_energy, estimate_reward
 
 class LoraTunning:
   def __init__(self, port_filter) -> None:
@@ -23,7 +23,8 @@ class LoraTunning:
       action: Action = await self.get_config()
       state: State = await self.ping()
       energy = estimate_tx_energy(action['transmission_power'], state['timeOverAir'], action['current_limit'])
-      self.logger.info(f"Energy for sf={sf} is {energy}")
+      reward = estimate_reward(state, energy)
+      self.logger.info(f"Energy for sf={sf} is {energy} and state {state}")
 
   async def get_config(self) -> Action:
     return await self.lora.config_get()

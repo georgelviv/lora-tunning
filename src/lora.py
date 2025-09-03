@@ -109,6 +109,10 @@ class Lora:
           if future and not future.done():
             parsed_params = map_response_to_state(params)
             self.loop.call_soon_threadsafe(future.set_result, parsed_params)
+        case "CONFIG_SYNC_CHECK_NO_ACK":
+          future = self.pending_futures.pop("CONFIG_SYNC", None)
+          if future and not future.done():
+            self.loop.call_soon_threadsafe(future.set_result)
         case _:
           self.logger.warning(f"Unknown command {command}")
 

@@ -1,6 +1,6 @@
 from typing import List, Tuple
 from .models import State, Action
-from .constants import SX1276_TX_CURRENT
+from .constants import RSSI_MAX, SX1276_SENSITIVITY, SX1276_TX_CURRENT
 
 def parse_msg(msg: str) -> Tuple[str, List[Tuple[str, float]]]:
   command = None
@@ -80,3 +80,33 @@ def estimate_tx_energy(tx_power_dbm: float, toa_s: float, current_limit: int, vo
   energy_j = voltage_v * current_a * toa_s
 
   return energy_j
+
+def clip(x, lo=0.0, hi=1.0) -> float:
+  return max(lo, min(hi, x))
+
+def norm(x, xmin, xmax) -> float:
+  if xmax == xmin:
+    return 0.0
+  return clip((x - xmin) / (xmax - xmin), 0.0, 1.0)
+
+def estimate_rssi_score(rssi: int) -> float:
+  rssi_score = (rssi - SX1276_SENSITIVITY) / (RSSI_MAX - SX1276_SENSITIVITY)
+  rssi_score = max(0.0, min(1.0, rssi_score))
+
+  return rssi_score
+
+def estimate_reward(state: State, energy):
+  b = norm(state['bytesPerSecond'], 0, 5000)
+  e = norm(energy, 0, 5)
+  d = norm(state['delay'], 0, 10000)
+  s = norm(state['snr'], 0, 20)
+  toa = norm(state['timeOverAir'], 0, 10000)
+
+  sensitivity = -148
+  rssi_margin = state['rssi'] - sensitivity
+  rssi_score = norm(rssi_margin, 0, -60)
+
+  print(f'rssi_score {rssi_score}')
+
+  # rssi_margin = sensitivity - state["rssi"]
+  # rssi_pen = clip(rssi_margin / 12, 0.0, 1.0)
