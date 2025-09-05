@@ -1,7 +1,10 @@
-from .utils import parse_msg, format_msg, map_response_to_state, map_config_to_action, estimate_tx_current, estimate_tx_energy, estimate_rssi_score
+from .utils import (
+  parse_msg, format_msg, map_response_to_state, map_config_to_action, estimate_tx_current,
+  estimate_tx_energy, estimate_rssi_score, estimate_reward
+)
 
 def test_parse_msg():
-  assert parse_msg("CONFIG_GET;FW=868.00,BW=500") == ("CONFIG_GET", [("FW", 868), ("BW", 500)])
+  assert parse_msg("CONFIG_GET;FQ=868.00,BW=500") == ("CONFIG_GET", [("FQ", 868), ("BW", 500)])
   assert parse_msg("RESET;") == ("RESET", [])
   assert parse_msg("CONFIG_SYNC;BW=500") == ("CONFIG_SYNC", [("BW", 500)])
       
@@ -14,17 +17,17 @@ def test_map_response_to_state():
     ('ID', 1.0), ('DELAY', 151.0), ('RSSI', -32.0), ('SNR', 7.25), 
     ('TOA', 36.0), ('BPS', 611.0), ('CHC', 1.0)
   ]) ==  {
-    'bytesPerSecond': 611.0,
-    'chunksCount': 1.0,
+    'bytes_per_second': 611.0,
+    'chunks_count': 1.0,
     'delay': 151.0,
     'rssi': -32.0,
     'snr': 7.25,
-    'timeOverAir': 36.0
+    'time_over_air': 36.0
   }
 
 def test_map_config_to_action():
   assert map_config_to_action([
-    ('FW', 869.0), ('BW', 500.0), ('SF', 8.0), ('CR', 8.0), 
+    ('FQ', 869.0), ('BW', 500.0), ('SF', 8.0), ('CR', 8.0), 
     ('TP', 10.0), ('IH', 0.0), ('HS', 10.0), ('PL', 10.0),
     ('CL', 45.0), ('RT', 1.0)
   ]) ==  {
@@ -58,3 +61,15 @@ def test_estimate_rssi_score():
   assert round(estimate_rssi_score(-80), 3) == 0.694
   assert round(estimate_rssi_score(-120), 3) == 0.286
   assert round(estimate_rssi_score(-130), 3) == 0.184
+
+def test_estimate_reward():
+  assert round(estimate_reward(
+    {
+      'delay': 828.0, 'rssi': -11.0, 'snr': 8.0, 'time_over_air': 314.0,
+      'bytes_per_second': 1500, 'chunks_count': 1.0
+    },
+    {
+      'frequency': 869.0, 'bandwidth': 500.0, 'spreading_factor': 7,
+      'coding_rate': 8, 'transmission_power': 10, 'implicit_header': False,
+      'header_size': 10, 'payload_length': 10, 'current_limit': 45, 'retries': 0
+    }), 3) == 0.452

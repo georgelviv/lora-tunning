@@ -1,21 +1,21 @@
 from typing import TypedDict
 
 class State(TypedDict):
-  delay: float
-  rssi: float
+  delay: int
+  rssi: int
   snr: float
-  timeOverAir: float
-  bytesPerSecond: float
-  chunksCount: float
+  time_over_air: int
+  bytes_per_second: int
+  chunks_count: int
 
 class Action(TypedDict):
-  frequency: float
-  bandwidth: float
-  spreading_factor: int
-  coding_rate: int
-  transmission_power: int
-  implicit_header: bool
-  header_size: int
-  payload_length: int
-  current_limit: int
-  retries: int
+  SF: int
+  FQ: int
+  BW: int
+  CR: int
+  TP: int
+  IH: int
+  HS: int
+  PL: int
+  CL: int
+  RT: int

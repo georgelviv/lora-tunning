@@ -38,25 +38,25 @@ def map_response_to_state(response: List[Tuple[str, float]]) -> State:
       "delay": float(data.get("DELAY", 0.0)),
       "rssi": float(data.get("RSSI", 0.0)),
       "snr": float(data.get("SNR", 0.0)),
-      "timeOverAir": float(data.get("TOA", 0.0)),
-      "bytesPerSecond": float(data.get("BPS", 0.0)),
-      "chunksCount": float(data.get("CHC", 0.0))
+      "time_over_air": float(data.get("TOA", 0.0)),
+      "bytes_per_second": float(data.get("BPS", 0.0)),
+      "chunks_count": float(data.get("CHC", 0.0))
   }
 
 def map_config_to_action(config: List[Tuple[str, float]]) -> Action:
   data = {k.upper(): v for k, v in config}
 
   return Action(
-    frequency=float(data.get("FW", 0.0)),
-    bandwidth=float(data.get("BW", 0.0)),
-    spreading_factor=int(data.get("SF", 0.0)),
-    coding_rate=int(data.get("CR", 0.0)),
-    transmission_power=int(data.get("TP", 0.0)),
-    implicit_header=bool(data.get("IH", 0.0)),
-    header_size=int(data.get("HS", 0.0)),
-    payload_length=int(data.get("PL", 0.0)),
-    current_limit=int(data.get("CL", 0.0)),
-    retries=int(data.get("RT", 0.0))
+    FQ=int(data.get("FQ", 0.0)),
+    BW=int(data.get("BW", 0.0)),
+    SF=int(data.get("SF", 0.0)),
+    CR=int(data.get("CR", 0.0)),
+    TP=int(data.get("TP", 0.0)),
+    IH=int(data.get("IH", 0.0)),
+    HS=int(data.get("HS", 0.0)),
+    PL=int(data.get("PL", 0.0)),
+    CL=int(data.get("CL", 0.0)),
+    RT=int(data.get("RT", 0.0))
   )
 
 def estimate_tx_current(tx_power: int) -> float:
@@ -95,18 +95,27 @@ def estimate_rssi_score(rssi: int) -> float:
 
   return rssi_score
 
-def estimate_reward(state: State, energy):
-  b = norm(state['bytesPerSecond'], 0, 5000)
-  e = norm(energy, 0, 5)
-  d = norm(state['delay'], 0, 10000)
+def estimate_reward(state: State, action: Action):
+  energy = estimate_tx_energy(
+    action['TP'], state['time_over_air'],
+    action['CL']
+  )
+
+  b = norm(state['bytes_per_second'], 0, 3000)
+  e = norm(energy, 0, 100)
+  d = norm(state['delay'], 0, 60000)
   s = norm(state['snr'], 0, 20)
-  toa = norm(state['timeOverAir'], 0, 10000)
+  toa = norm(state['time_over_air'], 0, 10000)
 
-  sensitivity = -148
-  rssi_margin = state['rssi'] - sensitivity
-  rssi_score = norm(rssi_margin, 0, -60)
+  rssi_score = estimate_rssi_score(state['rssi'])
 
-  print(f'rssi_score {rssi_score}')
+  reward = (
+    0.4 * b
+    + 0.2 * s
+    + 0.2 * rssi_score
+    - 0.1 * e
+    - 0.05 * d
+    - 0.05 * toa
+  )
 
-  # rssi_margin = sensitivity - state["rssi"]
-  # rssi_pen = clip(rssi_margin / 12, 0.0, 1.0)
+  return reward

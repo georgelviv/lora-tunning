@@ -1,7 +1,9 @@
 import logging
 from .lora import Lora
 from .models import Action, State
-from .utils import estimate_tx_energy, estimate_reward
+from .utils import estimate_reward
+from .multi_armed_bandit import MultiArmedBandit
+from .constants import actions
 
 class LoraTunning:
   def __init__(self, port_filter) -> None:
@@ -16,21 +18,20 @@ class LoraTunning:
 
     return logging.getLogger(__name__)
   
-  async def sf_test(self):
-    available_sf = list(range(7, 13))
-    for sf in available_sf:
-      await self.config_sync([('SF', sf)])
-      action: Action = await self.get_config()
-      state: State = await self.ping()
-      energy = estimate_tx_energy(action['transmission_power'], state['timeOverAir'], action['current_limit'])
-      reward = estimate_reward(state, energy)
-      self.logger.info(f"Energy for sf={sf} is {energy} and state {state}")
+  async def multi_armed_bandit(self):
+    bandit = MultiArmedBandit(actions, epsilon=0.2)
+    total = 10
 
-  async def get_config(self) -> Action:
-    return await self.lora.config_get()
-  
-  async def ping(self) -> State:
-    return await self.lora.ping(id=1)
-  
-  async def config_sync(self, params):
-    return await self.lora.config_sync(1, params)
+    for t in range(total):
+      self.logger.info(f'Running {t} of {total}')
+      action: Action = bandit.choose_action()
+      configs = list(action.items())
+      await self.lora.config_sync(1, configs)
+      action: Action = await self.lora.config_get()
+      state: State = await self.lora.ping(id=1)
+      reward = estimate_reward(state, action)
+      bandit.update(action, reward)
+
+    self.logger.info("Rewards:")
+    for a, v in bandit.values.items():
+      self.logger.info(f'{a},{v}')
