@@ -21,7 +21,7 @@ class LoraTunning:
     return logging.getLogger(__name__)
   
   async def multi_armed_bandit(self):
-    bandit = MultiArmedBandit(actions, epsilon=0.2)
+    bandit = MultiArmedBandit()
     total = 100
 
     for t in range(total):
