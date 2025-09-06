@@ -14,6 +14,7 @@ class Lora:
     self.loop = asyncio.get_event_loop()
     self.pending_futures: Dict[str, asyncio.Future] = {}
     self.running = False
+    self.sent_history: list[str] = []
 
     self.serial_port = self.find_serial_port(port_filter)
 
@@ -61,7 +62,7 @@ class Lora:
     if self.ser and self.ser.is_open:
       try:
         self.ser.write((data + "\r\n").encode("utf-8"))
-        self.logger.info(f"Sent: {data}")
+        self.sent_history.append(data)
       except Exception as e:
         self.logger.error(f"Error writing to serial: {e}")
     else:

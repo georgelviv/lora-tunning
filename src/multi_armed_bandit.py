@@ -2,6 +2,7 @@ from .models import Action
 from collections import defaultdict
 import random
 import json
+import pandas as pd
 
 class MultiArmedBandit:
   def __init__(self, actions: list[Action], epsilon=0.1):
@@ -25,3 +26,14 @@ class MultiArmedBandit:
 
   def get_action_key(self, action: Action) -> str:
     return json.dumps(action, sort_keys=True)
+  
+  def save_results(self, file_path: str) -> None:
+    rows = []
+    for action_json, reward in self.values.items():
+      action = json.loads(action_json)
+      action["reward"] = reward
+      rows.append(action)
+
+    if rows:
+      df = pd.DataFrame(rows)
+      df.to_csv(file_path, index=False)

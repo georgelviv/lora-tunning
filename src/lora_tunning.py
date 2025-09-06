@@ -4,6 +4,7 @@ from .models import Action, State
 from .utils import estimate_reward
 from .multi_armed_bandit import MultiArmedBandit
 from .constants import actions
+import sys
 
 class LoraTunning:
   def __init__(self, port_filter) -> None:
@@ -13,7 +14,8 @@ class LoraTunning:
   def getLogger(self) -> logging.Logger:
     logging.basicConfig(
       level=logging.INFO,
-      format='%(asctime)s [%(levelname)s] %(message)s'
+      format='%(asctime)s [%(levelname)s] %(message)s',
+      datefmt='%H:%M:%S'
     )
 
     return logging.getLogger(__name__)
@@ -32,6 +34,6 @@ class LoraTunning:
       reward = estimate_reward(state, action)
       bandit.update(action, reward)
 
-    self.logger.info("Rewards:")
-    for a, v in bandit.values.items():
-      self.logger.info(f'{a},{v}')
+    bandit.save_results('results.csv')
+    self.logger.info("Results saved in results.csv")
+    sys.exit(0)
