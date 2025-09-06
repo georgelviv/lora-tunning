@@ -15,14 +15,15 @@ def test_format_msg():
 def test_map_response_to_state():
   assert map_response_to_state([
     ('ID', 1.0), ('DELAY', 151.0), ('RSSI', -32.0), ('SNR', 7.25), 
-    ('TOA', 36.0), ('BPS', 611.0), ('CHC', 1.0)
+    ('TOA', 36.0), ('BPS', 611.0), ('CHC', 1.0), ('ATT', 2)
   ]) ==  {
     'bytes_per_second': 611.0,
     'chunks_count': 1.0,
     'delay': 151.0,
     'rssi': -32.0,
     'snr': 7.25,
-    'time_over_air': 36.0
+    'time_over_air': 36.0,
+    'attempt': 2
   }
 
 def test_map_config_to_action():
@@ -31,16 +32,16 @@ def test_map_config_to_action():
     ('TP', 10.0), ('IH', 0.0), ('HS', 10.0), ('PL', 10.0),
     ('CL', 45.0), ('RT', 1.0)
   ]) ==  {
-    'bandwidth': 500.0,
-    'coding_rate': 8,
-    'current_limit': 45,
-    'frequency': 869.0,
-    'header_size': 10,
-    'implicit_header': False,
-    'payload_length': 10,
-    'retries': 1,
-    'spreading_factor': 8,
-    'transmission_power': 10
+    'BW': 500.0,
+    'CR': 8,
+    'CL': 45,
+    'FQ': 869.0,
+    'HS': 10,
+    'IH': False,
+    'PL': 10,
+    'RT': 1,
+    'SF': 8,
+    'TP': 10
   }
 
 def test_estimate_tx_current():
@@ -66,10 +67,29 @@ def test_estimate_reward():
   assert round(estimate_reward(
     {
       'delay': 828.0, 'rssi': -11.0, 'snr': 8.0, 'time_over_air': 314.0,
-      'bytes_per_second': 1500, 'chunks_count': 1.0
+      'bytes_per_second': 1500, 'chunks_count': 1.0, 'attempt': 1
     },
     {
-      'frequency': 869.0, 'bandwidth': 500.0, 'spreading_factor': 7,
-      'coding_rate': 8, 'transmission_power': 10, 'implicit_header': False,
-      'header_size': 10, 'payload_length': 10, 'current_limit': 45, 'retries': 0
+      'FQ': 869.0, 'BW': 500.0, 'SF': 7,
+      'CR': 8, 'TP': 10, 'IH': False,
+      'HS': 10, 'PL': 10, 'CL': 45, 'RT': 0
     }), 3) == 0.452
+  
+  assert round(estimate_reward(
+    {
+      'delay': 828.0, 'rssi': -11.0, 'snr': 8.0, 'time_over_air': 314.0,
+      'bytes_per_second': 1500, 'chunks_count': 1.0, 'attempt': 2
+    },
+    {
+      'FQ': 869.0, 'BW': 500.0, 'SF': 7,
+      'CR': 8, 'TP': 10, 'IH': False,
+      'HS': 10, 'PL': 10, 'CL': 45, 'RT': 0
+    }), 3) == 0.452
+  
+  assert round(estimate_reward(
+    None,
+    {
+      'FQ': 869.0, 'BW': 500.0, 'SF': 7,
+      'CR': 8, 'TP': 10, 'IH': False,
+      'HS': 10, 'PL': 10, 'CL': 45, 'RT': 0
+    }), 3) == 0

@@ -20,7 +20,7 @@ class LoraTunning:
   
   async def multi_armed_bandit(self):
     bandit = MultiArmedBandit(actions, epsilon=0.2)
-    total = 10
+    total = 100
 
     for t in range(total):
       self.logger.info(f'Running {t} of {total}')

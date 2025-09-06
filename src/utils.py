@@ -35,12 +35,13 @@ def map_response_to_state(response: List[Tuple[str, float]]) -> State:
   data = {k.upper(): v for k, v in response}
 
   return {
-      "delay": float(data.get("DELAY", 0.0)),
-      "rssi": float(data.get("RSSI", 0.0)),
-      "snr": float(data.get("SNR", 0.0)),
-      "time_over_air": float(data.get("TOA", 0.0)),
-      "bytes_per_second": float(data.get("BPS", 0.0)),
-      "chunks_count": float(data.get("CHC", 0.0))
+    "delay": float(data.get("DELAY", 0.0)),
+    "rssi": float(data.get("RSSI", 0.0)),
+    "snr": float(data.get("SNR", 0.0)),
+    "time_over_air": float(data.get("TOA", 0.0)),
+    "bytes_per_second": float(data.get("BPS", 0.0)),
+    "chunks_count": float(data.get("CHC", 0.0)),
+    "attempt": int(data.get("ATT", 0.0))
   }
 
 def map_config_to_action(config: List[Tuple[str, float]]) -> Action:
@@ -96,6 +97,9 @@ def estimate_rssi_score(rssi: int) -> float:
   return rssi_score
 
 def estimate_reward(state: State, action: Action):
+  if not state:
+    return 0
+
   energy = estimate_tx_energy(
     action['TP'], state['time_over_air'],
     action['CL']
@@ -118,4 +122,4 @@ def estimate_reward(state: State, action: Action):
     - 0.05 * toa
   )
 
-  return reward
+  return round(reward, 10)
