@@ -21,10 +21,11 @@ class LoraTunning:
   
   async def multi_armed_bandit(self):
     bandit = MultiArmedBandit()
-    total = 100
+    results_file = 'results.csv'
 
-    for t in range(total):
-      self.logger.info(f'Running {t} of {total}')
+    bandit.load_results(results_file)
+
+    while True:
       action: Action = bandit.choose_action()
       configs = list(action.items())
       await self.lora.config_sync(1, configs)
@@ -32,7 +33,4 @@ class LoraTunning:
       state: State = await self.lora.ping(id=1)
       reward = estimate_reward(state, action)
       bandit.update(action, reward)
-
-    bandit.save_results('results.csv')
-    self.logger.info("Results saved in results.csv")
-    sys.exit(0)
+      bandit.save_results(results_file)
