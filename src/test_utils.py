@@ -48,6 +48,7 @@ def test_estimate_tx_current():
   assert estimate_tx_current(20) == 120
   assert estimate_tx_current(15) == 58
   assert estimate_tx_current(10) == 24.5
+  assert estimate_tx_current(2) == 15
 
 def test_estimate_tx_energy():
   assert round(estimate_tx_energy(20, 125, 45), 3) == 18.562

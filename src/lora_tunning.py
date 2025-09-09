@@ -3,7 +3,6 @@ from .lora import Lora
 from .models import Action, State
 from .utils import estimate_reward
 from .multi_armed_bandit import MultiArmedBandit
-from .constants import actions
 import sys
 
 class LoraTunning:

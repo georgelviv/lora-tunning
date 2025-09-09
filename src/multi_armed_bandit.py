@@ -3,6 +3,7 @@ from collections import defaultdict
 import random
 import json
 import pandas as pd
+from .utils import current_limit_for_tp
 
 class MultiArmedBandit:
   def __init__(self, epsilon=0.3):
@@ -36,18 +37,29 @@ class MultiArmedBandit:
 
     if rows:
       df = pd.DataFrame(rows)
+      df = df.sort_values(by='reward', ascending=False)
       df.to_csv(file_path, index=False)
 
   def random_action(self) -> Action:
+    sf = random.choice(range(6, 13))
+    ih = 0
+
+    if sf == 6:
+      ih = 1
+
+
+    tp = random.choice([x for x in range(2, 21) if x not in (18, 19)])
+    cl = current_limit_for_tp(tp)
+
     return {
-      "SF": random.choice([7,8,9,10,11,12]),
-      "FQ": 869,
-      "BW": 500,
-      "CR": 8,
-      "TP": 10,
-      "IH": 0,
-      "HS": 10,
-      "PL": 10,
-      "CL": 45,
+      "SF": sf,
+      "FQ": random.choice(range(860, 891)),
+      "BW": random.choice([125, 250, 500]),
+      "CR": random.choice(range(5, 9)),
+      "TP": tp,
+      "IH": ih,
+      "HS": 200,
+      "PL": random.choice(range(6, 101)),
+      "CL": cl,
       "RT": 1
     }

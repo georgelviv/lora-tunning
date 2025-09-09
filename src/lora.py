@@ -45,6 +45,7 @@ class Lora:
         if self.ser.in_waiting > 0:
           line = self.ser.readline().decode("utf-8", errors="ignore").strip()
           if line:
+            self.logger.info(line)
             self.serial_handler(line)
     except Exception as e:
       self.logger.error(f"Error in read_serial: {e}")
@@ -121,6 +122,12 @@ class Lora:
         case "CONFIG_SYNC_NO_ACK":
           future = self.pending_futures.pop("CONFIG_SYNC", None)
           if future and not future.done():
+            self.logger.info(f'Cannot sync CONFIG_SYNC_NO_ACK last action: {self.sent_history[-1]}')
+            self.loop.call_soon_threadsafe(future.set_result, None)
+        case "CONFIG_SYNC_ACK_NO_ACK":
+          future = self.pending_futures.pop("CONFIG_SYNC", None)
+          if future and not future.done():
+            self.logger.info(f'Cannot sync CONFIG_SYNC_ACK_NO_ACK last action: {self.sent_history[-1]}')
             self.loop.call_soon_threadsafe(future.set_result, None)
         case _:
           self.logger.warning(f"Unknown command {command}")
