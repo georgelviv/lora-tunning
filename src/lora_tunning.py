@@ -2,7 +2,7 @@ import logging
 from .lora import Lora
 from .models import Action, State
 from .utils import estimate_reward
-from .multi_armed_bandit import MultiArmedBandit
+from .mab import MultiArmedBandit
 import sys
 
 class LoraTunning:
@@ -20,10 +20,7 @@ class LoraTunning:
     return logging.getLogger(__name__)
   
   async def multi_armed_bandit(self):
-    bandit = MultiArmedBandit()
-    results_file = 'results.csv'
-
-    bandit.load_results(results_file)
+    bandit = MultiArmedBandit('results.csv', 'history.csv')
 
     while True:
       action: Action = bandit.choose_action()
@@ -33,4 +30,4 @@ class LoraTunning:
       state: State = await self.lora.ping(id=1)
       reward = estimate_reward(state, action)
       bandit.update(action, reward)
-      bandit.save_results(results_file)
+      bandit.save()
