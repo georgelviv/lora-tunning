@@ -113,8 +113,6 @@ def estimate_reward(state: State, action: Action):
 
   rssi_score = estimate_rssi_score(state['rssi'])
 
-  print(b, s, rssi_score, e, d, toa)
-
   reward = (
     0.4 * b
     + 0.2 * s

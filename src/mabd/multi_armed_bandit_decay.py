@@ -1,23 +1,24 @@
 from ..models import Action
-from collections import defaultdict
 import random
-import json
 import pandas as pd
 from ..utils import current_limit_for_tp
 import os
 
-class MultiArmedBandit:
-  def __init__(self, results_file, history_file, epsilon=0.3):
+class MultiArmedBanditDecay:
+  def __init__(self, results_file, history_file, epsilon=0.9):
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     self.epsilon = epsilon
     self.results_file = os.path.join(base_dir, results_file)
     self.history_file = os.path.join(base_dir, history_file)
 
-    self.history_df = pd.DataFrame(columns=["iteration", "reward", "timestamp"]).astype({
+    self.history_df = pd.DataFrame(columns=[
+      "iteration", "reward", "timestamp", "epsilon"
+    ]).astype({
       "iteration": "int64",
       "reward": "float64",
-      "timestamp": "datetime64[ns]"
+      "timestamp": "datetime64[ns]",
+      "epsilon": "float64"
     })
 
     self.df = pd.DataFrame(
@@ -53,9 +54,12 @@ class MultiArmedBandit:
     new_row = {
       "iteration": len(self.history_df) + 1,
       "reward": float(reward),
-      "timestamp": pd.Timestamp.now()
+      "timestamp": pd.Timestamp.now(),
+      "epsilon": float(self.epsilon)
     }
+
     self.history_df = pd.concat([self.history_df, pd.DataFrame([new_row])], ignore_index=True)
+    self.epsilon = max(0.01, self.epsilon * 0.995)
   
   def save(self) -> None:
     if not self.df.empty:

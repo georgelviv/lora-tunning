@@ -2,8 +2,7 @@ import logging
 from .lora import Lora
 from .models import Action, State
 from .utils import estimate_reward
-from .mab import MultiArmedBandit
-import sys
+from .mabd import MultiArmedBanditDecay
 
 class LoraTunning:
   def __init__(self, port_filter) -> None:
@@ -20,7 +19,7 @@ class LoraTunning:
     return logging.getLogger(__name__)
   
   async def multi_armed_bandit(self):
-    bandit = MultiArmedBandit('results.csv', 'history.csv')
+    bandit = MultiArmedBanditDecay('results.csv', 'history.csv')
 
     while True:
       action: Action = bandit.choose_action()
