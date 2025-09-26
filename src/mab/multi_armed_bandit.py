@@ -5,24 +5,30 @@ from ..utils import current_limit_for_tp
 import os
 
 class MultiArmedBandit:
-  def __init__(self, results_file, history_file, epsilon=0.3):
+  def __init__(self, results_file, history_file, epsilon=0.9,
+              decay=True, alpha=0.3, exponential_reward=True):
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     self.epsilon = epsilon
+    self.alpha = alpha
+    self.decay = decay
+    self.exponential_reward = exponential_reward
     self.results_file = os.path.join(base_dir, results_file)
     self.history_file = os.path.join(base_dir, history_file)
 
-    self.history_df = pd.DataFrame(columns=["iteration", "reward", "timestamp"]).astype({
+    self.history_df = pd.DataFrame(columns=[
+      "iteration", "reward", "timestamp", "epsilon"
+    ]).astype({
       "iteration": "int64",
       "reward": "float64",
-      "timestamp": "datetime64[ns]"
+      "timestamp": "datetime64[ns]",
+      "epsilon": "float64"
     })
 
-    self.df = pd.DataFrame(
-      columns=["SF", "FQ", "BW", "CR", "TP", "IH", "HS", "PL", "CL", "RT", "count", "reward"]
+    self.q_df = pd.DataFrame(
+      columns=["state", "SF", "FQ", "BW", "CR", "TP", "IH", "HS", "PL", "CL", "RT", "value"]
     ).astype({
-      "count": "int64",
-      "reward": "float64"
+      "value": "float64"
     })
 
     self.load()
@@ -41,7 +47,10 @@ class MultiArmedBandit:
       idx = self.df[mask].index[0]
       n = self.df.at[idx, "count"] + 1
       reward_val = self.df.at[idx, "reward"]
-      reward_val = reward_val + (reward- reward_val) / n
+      if self.exponential_reward:
+        reward_val = self.compute_reward_exponential(reward_val, reward)
+      else:
+        reward_val = self.compute_reward(reward_val, reward, n)
       self.df.at[idx, "count"] = n
       self.df.at[idx, "reward"] = float(reward_val) 
     else:
@@ -51,9 +60,23 @@ class MultiArmedBandit:
     new_row = {
       "iteration": len(self.history_df) + 1,
       "reward": float(reward),
-      "timestamp": pd.Timestamp.now()
+      "timestamp": pd.Timestamp.now(),
+      "epsilon": float(self.epsilon)
     }
+
     self.history_df = pd.concat([self.history_df, pd.DataFrame([new_row])], ignore_index=True)
+    self.update_epsilon()
+
+  def compute_reward(self, old_value: float, new_value: float, n: int) -> float:
+    return old_value + (new_value- old_value) / n
+  
+  def compute_reward_exponential(self, old_value: float, new_value: float) -> float:
+    # exponential recency-weighted average
+    return old_value * (1 - self.alpha) + new_value * self.alpha
+
+  def update_epsilon(self):
+    if self.decay:
+      self.epsilon = max(0.01, self.epsilon * 0.995)
   
   def save(self) -> None:
     if not self.df.empty:
