@@ -4,6 +4,7 @@ from .models import Action, State
 from .utils import estimate_reward
 from .mab import MultiArmedBandit
 from .qlearning import QLearning
+from .ucb import UCB
 
 class LoraTunning:
   def __init__(self, port_filter) -> None:
@@ -19,7 +20,7 @@ class LoraTunning:
     console_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%H:%M:%S')
     console_handler.setFormatter(console_formatter)
 
-    file_handler = logging.FileHandler('app.log')
+    file_handler = logging.FileHandler('app.log', mode='w')
     file_handler.setLevel(logging.INFO)
     file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S')
     file_handler.setFormatter(file_formatter)
@@ -41,6 +42,20 @@ class LoraTunning:
       reward = estimate_reward(state, action)
       bandit.update(action, reward)
       bandit.save()
+
+  async def ucb(self):
+    bandit = UCB(history_file='history.csv', ubf_file='ucb.csv', results_file='results.csv')
+
+    while True:
+      action: Action = bandit.choose_action()
+      configs = list(action.items())
+      await self.lora.config_sync(1, configs)
+      action: Action = await self.lora.config_get()
+      state: State = await self.lora.ping(id=1)
+      reward = estimate_reward(state, action)
+      if reward:
+        bandit.update(action, reward)
+        bandit.save()
 
   async def q_learning(self):
     q_agent = QLearning('results.csv', 'history.csv')

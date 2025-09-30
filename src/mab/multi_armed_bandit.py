@@ -3,6 +3,7 @@ import random
 import pandas as pd
 from ..utils import current_limit_for_tp
 import os
+import math
 
 class MultiArmedBandit:
   def __init__(self, results_file, history_file, epsilon=0.9,
@@ -13,6 +14,7 @@ class MultiArmedBandit:
     self.alpha = alpha
     self.decay = decay
     self.exponential_reward = exponential_reward
+
     self.results_file = os.path.join(base_dir, results_file)
     self.history_file = os.path.join(base_dir, history_file)
 
@@ -26,36 +28,41 @@ class MultiArmedBandit:
     })
 
     self.q_df = pd.DataFrame(
-      columns=["state", "SF", "FQ", "BW", "CR", "TP", "IH", "HS", "PL", "CL", "RT", "value"]
+      columns=["SF", "FQ", "BW", "CR", "TP", "IH", "HS", "PL", "CL", "RT", 
+        "count", "reward"]
     ).astype({
-      "value": "float64"
+      "count": "int64",
+      "reward": "float64"
     })
 
     self.load()
 
   def choose_action(self) -> Action:
-    if self.df.empty or random.random() < self.epsilon:
+    if self.q_df.empty:
       return self.random_action()
     
-    best_row = self.df.sort_values(by='reward', ascending=False).iloc[0]
-    return best_row.drop(["count", "reward"]).to_dict()
+    if random.random() > self.epsilon:
+      best_row = self.q_df.sort_values(by='reward', ascending=False).iloc[0]
+      return best_row.drop(["count", "reward"]).to_dict()
+    
+    return self.random_action()
   
   def update(self, action: Action, reward):
-    mask = (self.df[list(action)] == pd.Series(action)).all(axis=1)
+    mask = (self.q_df[list(action)] == pd.Series(action)).all(axis=1)
 
     if mask.any():
-      idx = self.df[mask].index[0]
-      n = self.df.at[idx, "count"] + 1
-      reward_val = self.df.at[idx, "reward"]
+      idx = self.q_df[mask].index[0]
+      n = self.q_df.at[idx, "count"] + 1
+      reward_val = self.q_df.at[idx, "reward"]
       if self.exponential_reward:
         reward_val = self.compute_reward_exponential(reward_val, reward)
       else:
         reward_val = self.compute_reward(reward_val, reward, n)
-      self.df.at[idx, "count"] = n
-      self.df.at[idx, "reward"] = float(reward_val) 
+      self.q_df.at[idx, "count"] = n
+      self.q_df.at[idx, "reward"] = float(reward_val) 
     else:
       action_with_stats = {**action, "count": 1, "reward": float(reward)}
-      self.df = pd.concat([self.df, pd.DataFrame([action_with_stats])], ignore_index=True)
+      self.q_df = pd.concat([self.q_df, pd.DataFrame([action_with_stats])], ignore_index=True)
 
     new_row = {
       "iteration": len(self.history_df) + 1,
@@ -79,8 +86,8 @@ class MultiArmedBandit:
       self.epsilon = max(0.01, self.epsilon * 0.995)
   
   def save(self) -> None:
-    if not self.df.empty:
-      df_sorted = self.df.sort_values(by="reward", ascending=False)
+    if not self.q_df.empty:
+      df_sorted = self.q_df.sort_values(by="reward", ascending=False)
       df_sorted.to_csv(self.results_file, index=False)
 
     if not self.history_df.empty:
@@ -88,7 +95,7 @@ class MultiArmedBandit:
 
   def load(self) -> None:
     try:
-      self.df = pd.read_csv(self.results_file)
+      self.q_df = pd.read_csv(self.results_file)
     except FileNotFoundError:
       pass
     try:
