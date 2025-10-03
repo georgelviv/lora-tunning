@@ -112,3 +112,6 @@ class MultiArmedBandit:
       "CL": cl,
       "RT": 1
     }
+  
+  def get_iteration(self) -> int:
+    return len(self.history_df)

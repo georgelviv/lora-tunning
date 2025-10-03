@@ -1,1 +1,1 @@
-from .multi_armed_bandit import MultiArmedBandit
+from .multi_armed_bandit_decay import MultiArmedBanditDecay
