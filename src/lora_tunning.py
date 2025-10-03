@@ -7,10 +7,12 @@ from .mab_decay import MultiArmedBanditDecay
 from .mab_reward_exponential import MultiArmedBanditRewardExponential
 from .qlearning import QLearning
 from .ucb import UCB
+import os
 
 class LoraTunning:
   def __init__(self, port_filter) -> None:
     self.logger: logging.Logger = self.getLogger()
+    self.base_dir = os.path.dirname(os.path.abspath(__file__))
     self.lora: Lora = Lora(self.logger, port_filter)
 
   def getLogger(self) -> logging.Logger:
@@ -48,19 +50,28 @@ class LoraTunning:
         break
   
   async def multi_armed_bandit(self):
-    bandit = MultiArmedBandit('results.csv', 'history.csv')
+    results_file_path = os.path.join(self.base_dir, 'mab/results.csv')
+    history_file_path = os.path.join(self.base_dir, 'mab/history.csv')
+    bandit = MultiArmedBandit(results_file_path, history_file_path, epsilon=0.3)
     await self.mab(bandit)
 
   async def multi_armed_bandit_decay(self):
-    bandit = MultiArmedBanditDecay('results.csv', 'history.csv')
+    results_file_path = os.path.join(self.base_dir, 'mab_decay/results.csv')
+    history_file_path = os.path.join(self.base_dir, 'mab_decay/history.csv')
+    bandit = MultiArmedBanditDecay(results_file_path, history_file_path)
     await self.mab(bandit)
 
   async def multi_armed_bandit_reward_exponential(self):
-    bandit = MultiArmedBanditRewardExponential('results.csv', 'history.csv')
+    results_file_path = os.path.join(self.base_dir, 'mab_reward_exponential/results.csv')
+    history_file_path = os.path.join(self.base_dir, 'mab_reward_exponential/history.csv')
+    bandit = MultiArmedBanditRewardExponential(results_file_path, history_file_path)
     await self.mab(bandit)   
 
   async def ucb(self):
-    bandit = UCB(history_file='history.csv', ubf_file='ucb.csv', results_file='results.csv')
+    results_file_path = os.path.join(self.base_dir, 'ucb/results.csv')
+    history_file_path = os.path.join(self.base_dir, 'ucb/history.csv')
+    ucb_file_path = os.path.join(self.base_dir, 'ucb/ucb.csv')
+    bandit = UCB(history_file=history_file_path, ubf_file=ucb_file_path, results_file=results_file_path)
 
     await self.mab(bandit)
 

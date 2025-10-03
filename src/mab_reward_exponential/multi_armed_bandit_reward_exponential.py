@@ -5,6 +5,6 @@ class MultiArmedBanditRewardExponential(MultiArmedBanditDecay):
     super().__init__(results_file, history_file, epsilon=epsilon)
     self.alpha = alpha
   
-  def compute_reward(self, old_value: float, new_value: float) -> float:
+  def compute_reward(self, old_value: float, new_value: float, *args, **kwargs) -> float:
     # exponential recency-weighted average
     return old_value * (1 - self.alpha) + new_value * self.alpha

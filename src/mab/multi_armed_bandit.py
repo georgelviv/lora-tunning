@@ -6,24 +6,21 @@ import os
 
 class MultiArmedBandit:
   def __init__(self, results_file, history_file, epsilon=0.9):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-
     self.epsilon = epsilon
 
-    self.results_file = os.path.join(base_dir, results_file)
-    self.history_file = os.path.join(base_dir, history_file)
+    self.results_file = results_file
+    self.history_file =  history_file 
 
     for f in [self.results_file, self.history_file]:
       if os.path.exists(f):
         os.remove(f)
 
     self.history_df = pd.DataFrame(columns=[
-      "iteration", "reward", "timestamp", "epsilon"
+      "iteration", "reward", "timestamp"
     ]).astype({
       "iteration": "int64",
       "reward": "float64",
-      "timestamp": "datetime64[ns]",
-      "epsilon": "float64"
+      "timestamp": "datetime64[ns]"
     })
 
     self.q_df = pd.DataFrame(
@@ -47,28 +44,31 @@ class MultiArmedBandit:
     return self.random_action()
   
   def update(self, action: Action, reward):
-    mask = (self.q_df[list(action)] == pd.Series(action)).all(axis=1)
-
     if action == 0:
       ## ignore unsuccess 
       return
+    self.update_q_table(action, reward)
+    self.update_history(reward)
+
+  def update_q_table(self, action: Action, reward) -> None:
+    mask = (self.q_df[list(action)] == pd.Series(action)).all(axis=1)
 
     if mask.any():
       idx = self.q_df[mask].index[0]
       n = self.q_df.at[idx, "count"] + 1
       reward_val = self.q_df.at[idx, "reward"]
-      reward_val = self.compute_reward(reward_val, reward, n)
+      self.compute_reward(reward_val, reward, n)
       self.q_df.at[idx, "count"] = n
       self.q_df.at[idx, "reward"] = float(reward_val) 
     else:
       action_with_stats = {**action, "count": 1, "reward": float(reward)}
       self.q_df = pd.concat([self.q_df, pd.DataFrame([action_with_stats])], ignore_index=True)
 
+  def update_history(self, reward) -> None:
     new_row = {
       "iteration": len(self.history_df) + 1,
       "reward": float(reward),
-      "timestamp": pd.Timestamp.now(),
-      "epsilon": float(self.epsilon)
+      "timestamp": pd.Timestamp.now()
     }
 
     self.history_df = pd.concat([self.history_df, pd.DataFrame([new_row])], ignore_index=True)
@@ -79,10 +79,11 @@ class MultiArmedBandit:
   def save(self) -> None:
     if not self.q_df.empty:
       df_sorted = self.q_df.sort_values(by="reward", ascending=False)
-      df_sorted.to_csv(self.results_file, index=False)
+      df_sorted.to_csv(self.results_file, index=False, float_format="%.4f")
 
     if not self.history_df.empty:
-      self.history_df.to_csv(self.history_file, index=False)
+      self.history_df.to_csv(self.history_file, index=False,
+                             float_format="%.4f", date_format="%Y-%m-%d %H:%M:%S")
 
   def load(self) -> None:
     try:
