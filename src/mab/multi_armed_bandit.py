@@ -13,6 +13,10 @@ class MultiArmedBandit:
     self.results_file = os.path.join(base_dir, results_file)
     self.history_file = os.path.join(base_dir, history_file)
 
+    for f in [self.results_file, self.history_file]:
+      if os.path.exists(f):
+        os.remove(f)
+
     self.history_df = pd.DataFrame(columns=[
       "iteration", "reward", "timestamp", "epsilon"
     ]).astype({
@@ -44,6 +48,10 @@ class MultiArmedBandit:
   
   def update(self, action: Action, reward):
     mask = (self.q_df[list(action)] == pd.Series(action)).all(axis=1)
+
+    if action == 0:
+      ## ignore unsuccess 
+      return
 
     if mask.any():
       idx = self.q_df[mask].index[0]
