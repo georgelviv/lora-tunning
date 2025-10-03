@@ -3,8 +3,9 @@ import random
 import pandas as pd
 from ..utils import current_limit_for_tp
 import os
+import math
 
-class MultiArmedBandit:
+class MultiArmedBanditDecay:
   def __init__(self, results_file, history_file, epsilon=0.9):
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -12,6 +13,10 @@ class MultiArmedBandit:
 
     self.results_file = os.path.join(base_dir, results_file)
     self.history_file = os.path.join(base_dir, history_file)
+
+    for f in [self.results_file, self.history_file]:
+      if os.path.exists(f):
+        os.remove(f)
 
     self.history_df = pd.DataFrame(columns=[
       "iteration", "reward", "timestamp", "epsilon"
@@ -64,6 +69,7 @@ class MultiArmedBandit:
     }
 
     self.history_df = pd.concat([self.history_df, pd.DataFrame([new_row])], ignore_index=True)
+    self.epsilon = max(0.01, self.epsilon * 0.995)
 
   def compute_reward(self, old_value: float, new_value: float, n: int) -> float:
     return old_value + (new_value- old_value) / n
@@ -104,3 +110,4 @@ class MultiArmedBandit:
       "CL": cl,
       "RT": 1
     }
+      

@@ -4,8 +4,8 @@ import pandas as pd
 from ..utils import current_limit_for_tp
 import os
 
-class MultiArmedBandit:
-  def __init__(self, results_file, history_file, epsilon=0.9):
+class MultiArmedBanditRewardExponential:
+  def __init__(self, results_file, history_file, epsilon=0.9, alpha=0.3):
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     self.epsilon = epsilon
@@ -49,7 +49,7 @@ class MultiArmedBandit:
       idx = self.q_df[mask].index[0]
       n = self.q_df.at[idx, "count"] + 1
       reward_val = self.q_df.at[idx, "reward"]
-      reward_val = self.compute_reward(reward_val, reward, n)
+      reward_val = self.compute_reward_exponential(reward_val, reward)
       self.q_df.at[idx, "count"] = n
       self.q_df.at[idx, "reward"] = float(reward_val) 
     else:
@@ -64,9 +64,18 @@ class MultiArmedBandit:
     }
 
     self.history_df = pd.concat([self.history_df, pd.DataFrame([new_row])], ignore_index=True)
+    self.update_epsilon()
 
   def compute_reward(self, old_value: float, new_value: float, n: int) -> float:
     return old_value + (new_value- old_value) / n
+  
+  def compute_reward_exponential(self, old_value: float, new_value: float) -> float:
+    # exponential recency-weighted average
+    return old_value * (1 - self.alpha) + new_value * self.alpha
+
+  def update_epsilon(self):
+    if self.decay:
+      self.epsilon = max(0.01, self.epsilon * 0.995)
   
   def save(self) -> None:
     if not self.q_df.empty:
