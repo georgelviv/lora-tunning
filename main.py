@@ -9,7 +9,7 @@ PORT_FILTER = os.getenv('PORT_FILTER')
 
 async def main():
   loraTunning = LoraTunning(PORT_FILTER)
-  await loraTunning.ucb()
+  await loraTunning.multi_armed_bandit()
   try:
     while True:
       await asyncio.sleep(1)

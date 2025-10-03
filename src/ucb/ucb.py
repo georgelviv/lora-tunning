@@ -10,12 +10,13 @@ from .models import PrimaryAction, SecondaryAction
 
 class UCB:
   def __init__(self, history_file, ubf_file, results_file, epsilon=0.9,
-               alpha=0.3, decay=True, exponential_reward=True):
+               alpha=0.3, exploration_factor=0.1, decay=True, exponential_reward=True):
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     self.alpha = alpha
     self.epsilon = epsilon
     self.decay = decay
+    self.exploration_factor = exploration_factor
     self.exponential_reward = exponential_reward
 
     self.history_file = os.path.join(base_dir, history_file)
@@ -48,6 +49,13 @@ class UCB:
 
     self.load()
 
+  def ucb(self, reward, count, total_count):
+    if count == 0:
+      return float('inf')
+    return reward + self.exploration_factor * math.sqrt(
+      2 * math.log(total_count + 1) / count
+    )
+
   def choose_action(self) -> Action:
     if self.ucb_df.empty:
       self.setup_initial_ucb_table()
@@ -55,9 +63,7 @@ class UCB:
 
     total_count = self.ucb_df["count"].sum()
     self.ucb_df["ucb"] = self.ucb_df.apply(
-      lambda row: row["reward"] + math.sqrt(
-        2 * math.log(total_count + 1) / (row["count"] + 1e-9)
-      ),
+      lambda row: self.ucb(row["reward"], row["count"], total_count),
       axis=1
     )
 
