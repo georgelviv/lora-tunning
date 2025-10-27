@@ -7,6 +7,7 @@ from .mab_decay import MultiArmedBanditDecay
 from .mab_reward_exponential import MultiArmedBanditRewardExponential
 from .qlearning import QLearning
 from .ucb import UCB
+from .gradient_bandits import GradientBandit
 import os
 
 class LoraTunning:
@@ -35,6 +36,8 @@ class LoraTunning:
     return logger
   
   async def mab(self, bandit: MultiArmedBandit):
+    self.logger.info(f"Starting {bandit.__class__.__name__}")
+
     while True:
       action: Action = bandit.choose_action()
       configs = list(action.items())
@@ -66,6 +69,13 @@ class LoraTunning:
     history_file_path = os.path.join(self.base_dir, 'mab_reward_exponential/history.csv')
     bandit = MultiArmedBanditRewardExponential(results_file_path, history_file_path)
     await self.mab(bandit)   
+
+  async def gradient_bandits(self):
+    results_file_path = os.path.join(self.base_dir, 'gradient_bandits/results.csv')
+    history_file_path = os.path.join(self.base_dir, 'gradient_bandits/history.csv')
+    gradients_file_path = os.path.join(self.base_dir, 'gradient_bandits/gradients.csv')
+    bandit = GradientBandit(results_file_path, history_file_path, gradients_file_path)
+    await self.mab(bandit)  
 
   async def ucb(self):
     results_file_path = os.path.join(self.base_dir, 'ucb/results.csv')

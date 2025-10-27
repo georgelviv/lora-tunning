@@ -16,7 +16,6 @@ class UCB(MultiArmedBanditRewardExponential):
     self.exploration_factor = exploration_factor
     super().__init__(results_file, history_file, epsilon=epsilon, alpha=alpha)
   
-
     if os.path.exists(self.ucb_file):
       os.remove(self.ucb_file)
 
@@ -45,7 +44,7 @@ class UCB(MultiArmedBanditRewardExponential):
     )
 
     best_idx = self.ucb_df["ucb"].idxmax()
-    primary = self.ucb_df.loc[best_idx, ["SF", "BW", "CR", "IH"]].to_dict()
+    primary: PrimaryAction = self.ucb_df.loc[best_idx, ["SF", "BW", "CR", "IH"]].to_dict()
 
     if random.random() < self.epsilon or self.q_df.empty:
       secondary = self.random_secondary_action()
@@ -53,7 +52,6 @@ class UCB(MultiArmedBanditRewardExponential):
       best_idx = self.q_df["reward"].idxmax()
       secondary = self.q_df.loc[best_idx, ["FQ", "TP", "HS", "PL", "CL", "RT"]].to_dict()
     return {**primary, **secondary}
-
   
   def update(self, action: Action, reward):
     super().update(action, reward)
@@ -89,7 +87,7 @@ class UCB(MultiArmedBanditRewardExponential):
     except FileNotFoundError:
       pass
 
-  def setup_initial_ucb_table(self) -> PrimaryAction:
+  def setup_initial_ucb_table(self) -> None:
     sf_values = list(range(6, 13))
     bw_values = [125, 250, 500]
     cr_values = list(range(5, 9))
