@@ -1,27 +1,24 @@
 import logging
 from .lora_base import LoraBase
 from ..models import Action, State
+from lora_simulation import LoraSimulation as Simulation
 
 class LoraSimulation(LoraBase):
   def __init__(self, logger: logging.Logger):
     self.logger = logger
+    self.simulation = Simulation()
 
-  @abstractmethod
   async def start(self):
     pass
 
-  @abstractmethod
   async def stop(self):
     pass
 
-  @abstractmethod
   async def config_get(self) -> Action:
-    pass
+    return self.simulation.get_config()
 
-  @abstractmethod
   async def ping(self, id: int) -> State:
-    pass
+    return self.simulation.ping()
 
-  @abstractmethod
   async def config_sync(self, id: int, params: Action) -> None:
-    pass
+    return self.simulation.set_config(params)
