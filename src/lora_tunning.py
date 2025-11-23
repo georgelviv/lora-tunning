@@ -22,8 +22,7 @@ class LoraTunning:
 
     while True:
       action: Action = bandit.choose_action()
-      configs = list(action.items())
-      await self.lora.config_sync(1, configs)
+      await self.lora.config_sync(1, action)
       action: Action = await self.lora.config_get()
       state: State = await self.lora.ping(id=1)
       reward = estimate_reward(state, action)

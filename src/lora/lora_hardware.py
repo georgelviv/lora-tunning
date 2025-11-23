@@ -93,10 +93,11 @@ class LoraHardware(LoraBase):
     state = await future
     return state
   
-  async def config_sync(self, id: int, params) -> None:
+  async def config_sync(self, id: int, params: Action) -> None:
+    configs = list(params.items())
     future = self.loop.create_future()
     self.pending_futures['CONFIG_SYNC'] = future
-    msg = format_msg("CONFIG_SYNC", [("ID", id), *params])
+    msg = format_msg("CONFIG_SYNC", [("ID", id), *configs])
     self.write_serial(msg)
     return await future
   
