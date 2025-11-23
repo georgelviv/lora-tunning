@@ -1,64 +1,7 @@
-from typing import List, Tuple
 from .models import State, Action
+import logging
 from .constants import RSSI_MAX, SX1276_SENSITIVITY, SX1276_TX_CURRENT
 
-def parse_msg(msg: str) -> Tuple[str, List[Tuple[str, float]]]:
-  command = None
-  params = []
-  if ";" in msg:
-    command, params_str = msg.split(";", 1)
-    params_pairs = []
-    if "," in params_str:
-      params_pairs = params_str.split(",")
-    elif params_str:
-      params_pairs = [params_str]
-
-    for param_pair in params_pairs:
-      key, val = param_pair.split("=", 1)
-
-      try:
-        val_conv = float(val)
-      except ValueError:
-        val_conv = val
-
-      params.append((key, val_conv))
-
-  return (command, params)
-
-def format_msg(command: str, params: List[Tuple[str, float]] = []):
-  if not params:
-    return command
-  params_str = ",".join(f"{key}={value}" for key, value in params)
-  return f"{command};{params_str}"
-
-def map_response_to_state(response: List[Tuple[str, float]]) -> State:
-  data = {k.upper(): v for k, v in response}
-
-  return {
-    "delay": float(data.get("DELAY", 0.0)),
-    "rssi": float(data.get("RSSI", 0.0)),
-    "snr": float(data.get("SNR", 0.0)),
-    "time_over_air": float(data.get("TOA", 0.0)),
-    "bytes_per_second": float(data.get("BPS", 0.0)),
-    "chunks_count": float(data.get("CHC", 0.0)),
-    "attempt": int(data.get("ATT", 0.0))
-  }
-
-def map_config_to_action(config: List[Tuple[str, float]]) -> Action:
-  data = {k.upper(): v for k, v in config}
-
-  return Action(
-    FQ=int(data.get("FQ", 0.0)),
-    BW=int(data.get("BW", 0.0)),
-    SF=int(data.get("SF", 0.0)),
-    CR=int(data.get("CR", 0.0)),
-    TP=int(data.get("TP", 0.0)),
-    IH=int(data.get("IH", 0.0)),
-    HS=int(data.get("HS", 0.0)),
-    PL=int(data.get("PL", 0.0)),
-    CL=int(data.get("CL", 0.0)),
-    RT=int(data.get("RT", 0.0))
-  )
 
 def estimate_tx_current(tx_power: int) -> float:
   powers = sorted(SX1276_TX_CURRENT.keys())
@@ -133,3 +76,22 @@ def current_limit_for_tp(tp: int) -> int:
     return 120
   else:
     return 140
+  
+def getLogger() -> logging.Logger:
+  logger = logging.getLogger(__name__)
+  logger.setLevel(logging.INFO)
+  
+  console_handler = logging.StreamHandler()
+  console_handler.setLevel(logging.INFO)
+  console_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%H:%M:%S')
+  console_handler.setFormatter(console_formatter)
+
+  file_handler = logging.FileHandler('app.log', mode='w')
+  file_handler.setLevel(logging.INFO)
+  file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S')
+  file_handler.setFormatter(file_formatter)
+
+  logger.addHandler(console_handler)
+  logger.addHandler(file_handler)
+
+  return logger

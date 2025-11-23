@@ -1,28 +1,31 @@
-from typing import Dict
-import serial.tools.list_ports
 import logging
+import serial.tools.list_ports
+from .lora_base import LoraBase
 import threading
 import asyncio
-from .models import Action, State
-from .utils import format_msg, map_config_to_action, map_response_to_state, parse_msg
+from typing import Dict
+from ..models import Action, State
+from .lora_hardware_utils import format_msg, parse_msg, map_config_to_action, map_response_to_state
 
-class Lora:
-  def __init__(self, logger: logging.Logger, port_filter: str) -> None:
-    self.logger: logging.Logger = logger
+class LoraHardware(LoraBase):
+
+  def __init__(self, logger: logging.Logger, port_filter: str):
+    self.port_filter = port_filter
+    self.logger = logger
     self.ser = None
     self.thread = None
-    self.loop = asyncio.get_event_loop()
-    self.pending_futures: Dict[str, asyncio.Future] = {}
     self.running = False
+    self.pending_futures: Dict[str, asyncio.Future] = {}
+    self.loop = asyncio.get_event_loop()
     self.sent_history: list[str] = []
 
-    self.serial_port = self.find_serial_port(port_filter)
+  def start(self):
+    self.serial_port = self.find_serial_port(self.port_filter)
+    self.start_listener()
 
-    if self.serial_port:
-      self.start_listener()
-    else:
-      self.logger.error("Serial port not found")
-  
+  def stop(self):
+    self.stop_listener()
+
   def find_serial_port(self, filter: str) -> str:
     ports = serial.tools.list_ports.comports()
     for port in ports:
@@ -36,7 +39,13 @@ class Lora:
     self.thread = threading.Thread(target=self.read_serial, daemon=True)
     self.thread.start()
     self.logger.info(f"Listening thread started on {self.serial_port}")
-  
+
+  def stop_listener(self):
+    self.running = False
+    if self.thread and self.thread.is_alive():
+      self.thread.join(timeout=2)
+    self.logger.info("Listener stopped")
+
   def read_serial(self):
     self.logger.info(f"Connected to {self.serial_port}")
 
@@ -53,7 +62,6 @@ class Lora:
       self.ser.close()
       self.logger.info("Serial connection closed")
 
-  def stop_listener(self):
     self.running = False
     if self.thread and self.thread.is_alive():
       self.thread.join(timeout=2)
@@ -90,8 +98,8 @@ class Lora:
     self.pending_futures['CONFIG_SYNC'] = future
     msg = format_msg("CONFIG_SYNC", [("ID", id), *params])
     self.write_serial(msg)
-    return await future    
-
+    return await future
+  
   def serial_handler(self, msg: str):
     command, params = parse_msg(msg)
     if command:
@@ -131,5 +139,3 @@ class Lora:
             self.loop.call_soon_threadsafe(future.set_result, None)
         case _:
           self.logger.warning(f"Unknown command {command}")
-
-      

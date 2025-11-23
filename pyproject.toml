@@ -1,0 +1,17 @@
+[project]
+name = "lora-tunning"
+version = "0.0.1"
+description = "LoRa params auto tunning with Reinforcement Learning"
+authors = [{name = "Shkoropad Yurii",  email = "lvivgeorg@gmail.com"}]
+requires-python = ">=3.12"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.0",
+  "pyserial>=3.5",
+  "python-dotenv>=1.0",
+  "pytest>=8.0",
+  "lora-simulation @ git+https://github.com/georgelviv/lora-simulation.git"
+]
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"

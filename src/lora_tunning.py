@@ -1,5 +1,5 @@
 import logging
-from .lora import Lora
+from .lora import Lora, LoraBase
 from .models import Action, State
 from .utils import estimate_reward
 from .mab import MultiArmedBandit
@@ -9,31 +9,13 @@ from .qlearning import QLearning
 from .ucb import UCB
 from .gradient_bandits import GradientBandit
 import os
+import logging
 
 class LoraTunning:
-  def __init__(self, port_filter) -> None:
-    self.logger: logging.Logger = self.getLogger()
+  def __init__(self, logger: logging.Logger, backend: LoraBase) -> None:
+    self.logger: logging.Logger = logger
     self.base_dir = os.path.dirname(os.path.abspath(__file__))
-    self.lora: Lora = Lora(self.logger, port_filter)
-
-  def getLogger(self) -> logging.Logger:
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-  
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%H:%M:%S')
-    console_handler.setFormatter(console_formatter)
-
-    file_handler = logging.FileHandler('app.log', mode='w')
-    file_handler.setLevel(logging.INFO)
-    file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S')
-    file_handler.setFormatter(file_formatter)
-
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-
-    return logger
+    self.lora: Lora = Lora(self.logger, backend)
   
   async def mab(self, bandit: MultiArmedBandit):
     self.logger.info(f"Starting {bandit.__class__.__name__}")
@@ -74,7 +56,7 @@ class LoraTunning:
     results_file_path = os.path.join(self.base_dir, 'gradient_bandits/results.csv')
     history_file_path = os.path.join(self.base_dir, 'gradient_bandits/history.csv')
     gradients_file_path = os.path.join(self.base_dir, 'gradient_bandits/gradients.csv')
-    bandit = GradientBandit(results_file_path, history_file_path, gradients_file_path)
+    bandit = GradientBandit(results_file_path, history_file_path, gradients_file_path, alpha=0.01)
     await self.mab(bandit)  
 
   async def ucb(self):
