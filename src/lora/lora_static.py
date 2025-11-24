@@ -2,6 +2,9 @@ import logging
 from .lora_base import LoraBase
 from ..models import Action, State
 
+def lora_log(command: str, cfg: Action | State) -> str:
+  return  command + ";" + ",".join(f"{k}={v}" for k, v in cfg.items())
+
 class LoraStatic(LoraBase):
   def __init__(self, logger: logging.Logger):
     self.logger = logger
@@ -28,7 +31,7 @@ class LoraStatic(LoraBase):
     return self.config
 
   async def ping(self, id: int) -> State:
-    return {
+    state: State = {
       'BPS': 611.0,
       'CHC': 1.0,
       'DELAY': 151.0,
@@ -37,6 +40,9 @@ class LoraStatic(LoraBase):
       'TOA': 36.0,
       'ATT': 2
     }
+    self.logger.info(lora_log("PING", state))
+    return state
 
   async def config_sync(self, id: int, params: Action) -> None:
+    self.logger.info(lora_log("CONFIG_SYNC", params))
     self.config = params
