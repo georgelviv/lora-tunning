@@ -7,7 +7,9 @@ class Lora:
     self.logger: logging.Logger = logger
 
     self.backend = backend
-    self.backend.start()
+    
+  async def start(self) -> None:
+    await self.backend.start()
 
   def stop(self):
     self.backend.stop()

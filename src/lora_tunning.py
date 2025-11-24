@@ -19,6 +19,7 @@ class LoraTunning:
   
   async def mab(self, bandit: MultiArmedBandit):
     self.logger.info(f"Starting {bandit.__class__.__name__}")
+    await self.lora.start()
 
     while True:
       action: Action = bandit.choose_action()

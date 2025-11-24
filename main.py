@@ -1,7 +1,10 @@
 import asyncio
 from dotenv import load_dotenv
 import os
-from src import LoraTunning, LoraHardware, getLogger, LoraStatic
+from src import (
+  LoraTunning, LoraHardware, getLogger, LoraStatic, 
+  LoraSimulation, LORA_SIMULATION_ENVIRONMENTS
+)
 
 load_dotenv(override=True)
 
@@ -10,14 +13,11 @@ PORT_FILTER = os.getenv('PORT_FILTER')
 async def main():
   logger = getLogger()
   # backend = LoraHardware(logger, PORT_FILTER)
-  backend = LoraStatic(logger)
+  backend = LoraSimulation(logger, LORA_SIMULATION_ENVIRONMENTS['open_field'])
   loraTunning = LoraTunning(logger, backend)
   await loraTunning.gradient_bandits()
-  try:
-    while True:
-      await asyncio.sleep(1)
-  except KeyboardInterrupt:
-    loraTunning.lora.stop()
+
+  logger.info("2222")
 
 if __name__ == "__main__":
   asyncio.run(main())
