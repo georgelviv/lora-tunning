@@ -32,11 +32,11 @@ def test_map_response_to_state():
     ('ID', 1.0), ('DELAY', 151.0), ('RSSI', -32.0), ('SNR', 7.25), 
     ('TOA', 36.0), ('BPS', 611.0), ('CHC', 1.0), ('ATT', 2)
   ]) ==  {
-    'bytes_per_second': 611.0,
-    'chunks_count': 1.0,
-    'delay': 151.0,
-    'rssi': -32.0,
-    'snr': 7.25,
-    'time_over_air': 36.0,
-    'attempt': 2
+    'BPS': 611.0,
+    'CHC': 1.0,
+    'DELAY': 151.0,
+    'RSSI': -32.0,
+    'SNR': 7.25,
+    'TOA': 36.0,
+    'ATT': 2
   }

@@ -44,17 +44,17 @@ def estimate_reward(state: State, action: Action):
     return 0
 
   energy = estimate_tx_energy(
-    action['TP'], state['time_over_air'],
+    action['TP'], state['TOA'],
     action['CL']
   )
 
-  b = norm(state['bytes_per_second'], 0, 3000)
+  b = norm(state['BPS'], 0, 3000)
   e = norm(energy, 0, 100)
-  d = norm(state['delay'], 0, 60000)
-  s = norm(state['snr'], 0, 20)
-  toa = norm(state['time_over_air'], 0, 10000)
+  d = norm(state['DELAY'], 0, 60000)
+  s = norm(state['SNR'], 0, 20)
+  toa = norm(state['TOA'], 0, 10000)
 
-  rssi_score = estimate_rssi_score(state['rssi'])
+  rssi_score = estimate_rssi_score(state['RSSI'])
 
   reward = (
     0.4 * b

@@ -25,8 +25,8 @@ def test_estimate_rssi_score():
 def test_estimate_reward():
   assert round(estimate_reward(
     {
-      'delay': 828.0, 'rssi': -11.0, 'snr': 8.0, 'time_over_air': 314.0,
-      'bytes_per_second': 1500, 'chunks_count': 1.0, 'attempt': 1
+      'DELAY': 828.0, 'RSSI': -11.0, 'SNR': 8.0, 'TOA': 314.0,
+      'BPS': 1500, 'CHC': 1.0, 'ATT': 1
     },
     {
       'FQ': 869.0, 'BW': 500.0, 'SF': 7,
@@ -36,8 +36,8 @@ def test_estimate_reward():
   
   assert round(estimate_reward(
     {
-      'delay': 828.0, 'rssi': -11.0, 'snr': 8.0, 'time_over_air': 314.0,
-      'bytes_per_second': 1500, 'chunks_count': 1.0, 'attempt': 2
+      'DELAY': 828.0, 'RSSI': -11.0, 'SNR': 8.0, 'TOA': 314.0,
+      'BPS': 1500, 'CHC': 1.0, 'ATT': 2
     },
     {
       'FQ': 869.0, 'BW': 500.0, 'SF': 7,

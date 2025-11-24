@@ -1,12 +1,13 @@
 from typing import TypedDict
 
 class State(TypedDict):
-  delay: int
-  rssi: int
-  snr: float
-  time_over_air: int
-  bytes_per_second: int
-  chunks_count: int
+  DELAY: float
+  RSSI: float
+  SNR: float
+  TOA: float
+  BPS: float
+  CHC: float
+  ATT: float
 
 class Action(TypedDict):
   SF: int
