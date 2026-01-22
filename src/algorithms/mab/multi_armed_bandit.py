@@ -1,19 +1,17 @@
-from ..models import Action
+from ...models import Action
 import random
 import pandas as pd
-from ..utils import current_limit_for_tp
-import os
+from ...utils import current_limit_for_tp
+from ..utils import prepare_results
+
+from pathlib import Path
 
 class MultiArmedBandit:
-  def __init__(self, results_file, history_file, epsilon=0.9):
+  def __init__(self, epsilon=0.9):
     self.epsilon = epsilon
 
-    self.results_file = results_file
-    self.history_file =  history_file 
-
-    for f in [self.results_file, self.history_file]:
-      if os.path.exists(f):
-        os.remove(f)
+    base_dir = Path(__file__).resolve().parent
+    self.results_file, self.history_file = prepare_results(base_dir)
 
     self.history_df = pd.DataFrame(columns=[
       "iteration", "reward", "timestamp"

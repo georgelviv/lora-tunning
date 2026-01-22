@@ -10,7 +10,7 @@ import os
 
 class UCB(MultiArmedBanditRewardExponential):
   def __init__(self, results_file, history_file, ubf_file, epsilon=0.9,
-               alpha=0.3, exploration_factor=0.1):
+               alpha=0.3, exploration_factor=0.2):
 
     self.ucb_file = ubf_file
     self.exploration_factor = exploration_factor

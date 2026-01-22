@@ -10,7 +10,7 @@ dependencies = [
   "pyserial>=3.5",
   "python-dotenv>=1.0",
   "pytest>=8.0",
-  "lora-simulation @ git+https://github.com/georgelviv/lora-simulation.git"
+  "lora-hardware-model @ git+ssh://git@github.com/georgelviv/lora-hardware-model.git"
 ]
 [build-system]
 requires = ["setuptools>=61"]

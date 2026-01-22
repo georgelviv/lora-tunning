@@ -2,7 +2,6 @@ from .models import State, Action
 import logging
 from .constants import RSSI_MAX, SX1276_SENSITIVITY, SX1276_TX_CURRENT
 
-
 def estimate_tx_current(tx_power: int) -> float:
   powers = sorted(SX1276_TX_CURRENT.keys())
   if tx_power in SX1276_TX_CURRENT:
