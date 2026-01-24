@@ -1,5 +1,5 @@
 from typing import Dict
-from ...models import Action
+from ...models import Action, Algorithm
 import random
 import pandas as pd
 from ..utils import current_limit_for_tp
@@ -7,11 +7,13 @@ from ..utils import prepare_results
 
 from pathlib import Path
 
-class MultiArmedBandit:
-  def __init__(self, results_dir: Path, epsilon=0.9, extra_files: Dict[str, str] | None = None):
-    self.epsilon = epsilon
+class MultiArmedBandit(Algorithm):
+  @property
+  def name(self) -> str:
+    return "mab"
 
-    self.files = prepare_results(results_dir, extra_files)
+  def __init__(self, epsilon=0.9):
+    self.epsilon = epsilon
 
     self.history_df = pd.DataFrame(columns=[
       "iteration", "reward", "timestamp"
@@ -28,6 +30,9 @@ class MultiArmedBandit:
       "count": "int64",
       "reward": "float64"
     })
+
+  def set_results_dir(self, results_dir: Path):
+    self.files = prepare_results(results_dir)
 
   def choose_action(self) -> Action:
     if self.q_df.empty:

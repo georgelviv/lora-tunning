@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import TypedDict
+from pathlib import Path
+from typing import Dict, TypedDict
 
 class State(TypedDict):
   DELAY: float
@@ -23,6 +24,11 @@ class Action(TypedDict):
   RT: int
 
 class LoraBase(ABC):
+  @property
+  @abstractmethod
+  def name(self) -> str:
+      pass
+
   @abstractmethod
   async def start(self):
     pass
@@ -45,6 +51,15 @@ class LoraBase(ABC):
 
 
 class Algorithm(ABC):
+  @property
+  @abstractmethod
+  def name(self) -> str:
+      pass
+  
+  @abstractmethod
+  def set_results_dir(results_dir: Path) -> None:
+    pass
+
   @abstractmethod
   def choose_action(self) -> Action:
     pass

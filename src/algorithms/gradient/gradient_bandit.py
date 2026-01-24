@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from ..ucb import PrimaryAction, SecondaryAction
@@ -5,13 +6,15 @@ from ...models import Action
 from ..mab_reward_exponential import MultiArmedBanditRewardExponential
 import random
 import itertools
-from ..utils import current_limit_for_tp
+from ..utils import current_limit_for_tp, prepare_results
 
 class GradientBandit(MultiArmedBanditRewardExponential):
+  @property
+  def name(self) -> str:
+    return "gradient"
+
   def __init__(self, alpha=0.1, epsilon=0.9):
-    super().__init__(epsilon=epsilon, alpha=alpha, extra_files={
-      "gradients": "gradients.csv"
-    })
+    super().__init__(epsilon=epsilon, alpha=alpha)
   
     self.alpha = alpha
 
@@ -21,6 +24,11 @@ class GradientBandit(MultiArmedBanditRewardExponential):
 
     self.setup_initial_gradients_table()
     self.avg_reward = 0
+
+  def set_results_dir(self, results_dir: Path):
+    self.files = prepare_results(results_dir, extra_files={
+      "gradients": "gradients.csv"
+    })
 
   def choose_action(self) -> Action:
     if self.q_df.empty:

@@ -20,7 +20,7 @@ def prepare_results(
   if results_dir.exists() and results_dir.is_dir():
     shutil.rmtree(results_dir)
 
-  results_dir.mkdir()
+  results_dir.mkdir(parents=True, exist_ok=True)
 
   paths: Dict[str, Path] = {
     "results": results_dir / "results.csv",

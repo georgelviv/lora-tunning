@@ -1,20 +1,23 @@
+from pathlib import Path
 from ..mab_reward_exponential import MultiArmedBanditRewardExponential
 from ...models import Action
 import random
 import itertools
 import pandas as pd
-from ..utils import current_limit_for_tp
+from ..utils import current_limit_for_tp, prepare_results
 import math
 from .models import PrimaryAction, SecondaryAction
 
 class UCB(MultiArmedBanditRewardExponential):
+  @property
+  def name(self) -> str:
+    return "ucb"
+
   def __init__(self, epsilon=0.9,
                alpha=0.3, exploration_factor=0.2):
 
     self.exploration_factor = exploration_factor
-    super().__init__(epsilon=epsilon, alpha=alpha, extra_files={
-      "ucb": "ucb.csv"
-    })
+    super().__init__(epsilon=epsilon, alpha=alpha)
 
     self.ucb_df = pd.DataFrame(
       columns=["SF", "BW", "CR", "IH", "count", "reward", "ucb"]
@@ -25,6 +28,11 @@ class UCB(MultiArmedBanditRewardExponential):
     })
 
     self.setup_initial_ucb_table()
+
+  def set_results_dir(self, results_dir: Path):
+    self.files = prepare_results(results_dir, extra_files={
+      "ucb": "ucb.csv"
+    })
 
   def ucb(self, reward, count, total_count):
     if count == 0:

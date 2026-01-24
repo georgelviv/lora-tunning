@@ -396,7 +396,7 @@ pyserial = ">=3.5,<4.0"
 type = "git"
 url = "ssh://git@github.com/georgelviv/lora-hardware-model.git"
 reference = "HEAD"
-resolved_reference = "f77555bc02b25efaa28e4a4598fc5a1d77314f5d"
+resolved_reference = "f7c885eb7ea229665002a069079919c4479aa734"
 
 [[package]]
 name = "lora-simulation-model"
