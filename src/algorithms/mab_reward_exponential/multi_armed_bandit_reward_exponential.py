@@ -1,8 +1,9 @@
+from typing import Dict
 from ..mab_decay import MultiArmedBanditDecay
 
 class MultiArmedBanditRewardExponential(MultiArmedBanditDecay):
-  def __init__(self, results_file, history_file, epsilon=0.9, alpha=0.3):
-    super().__init__(results_file, history_file, epsilon=epsilon)
+  def __init__(self, epsilon=0.9, alpha=0.3, extra_files: Dict[str, str] | None = None):
+    super().__init__(epsilon=epsilon, extra_files=extra_files)
     self.alpha = alpha
   
   def compute_reward(self, old_value: float, new_value: float, *args, **kwargs) -> float:

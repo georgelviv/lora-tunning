@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import random
-from ..models import Action, State
+from ...models import Action, State
 from ..utils import current_limit_for_tp
 
 class QLearning:

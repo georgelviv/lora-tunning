@@ -1,4 +1,4 @@
-from ..models import Action
+from ...models import Action
 from ..mab import MultiArmedBandit
 
 class MultiArmedBanditDecay(MultiArmedBandit):

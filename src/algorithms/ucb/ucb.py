@@ -1,23 +1,20 @@
-from src.mab_reward_exponential import MultiArmedBanditRewardExponential
-from ..models import Action
+from ..mab_reward_exponential import MultiArmedBanditRewardExponential
+from ...models import Action
 import random
 import itertools
 import pandas as pd
 from ..utils import current_limit_for_tp
 import math
 from .models import PrimaryAction, SecondaryAction
-import os
 
 class UCB(MultiArmedBanditRewardExponential):
-  def __init__(self, results_file, history_file, ubf_file, epsilon=0.9,
+  def __init__(self, epsilon=0.9,
                alpha=0.3, exploration_factor=0.2):
 
-    self.ucb_file = ubf_file
     self.exploration_factor = exploration_factor
-    super().__init__(results_file, history_file, epsilon=epsilon, alpha=alpha)
-  
-    if os.path.exists(self.ucb_file):
-      os.remove(self.ucb_file)
+    super().__init__(epsilon=epsilon, alpha=alpha, extra_files={
+      "ucb": "ucb.csv"
+    })
 
     self.ucb_df = pd.DataFrame(
       columns=["SF", "BW", "CR", "IH", "count", "reward", "ucb"]
@@ -78,14 +75,7 @@ class UCB(MultiArmedBanditRewardExponential):
 
     if not self.ucb_df.empty:
       df_ucb_sorted = self.ucb_df.sort_values(by="reward", ascending=False)
-      df_ucb_sorted.to_csv(self.ucb_file, index=False, float_format="%.4f")
-
-  def load(self) -> None:
-    super().load()
-    try:
-      self.ucb_df = pd.read_csv(self.ucb_file)
-    except FileNotFoundError:
-      pass
+      df_ucb_sorted.to_csv(self.files["ucb"], index=False, float_format="%.4f")
 
   def setup_initial_ucb_table(self) -> None:
     sf_values = list(range(6, 13))

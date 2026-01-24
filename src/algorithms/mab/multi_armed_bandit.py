@@ -1,17 +1,18 @@
+from typing import Dict
 from ...models import Action
 import random
 import pandas as pd
-from ...utils import current_limit_for_tp
+from ..utils import current_limit_for_tp
 from ..utils import prepare_results
 
 from pathlib import Path
 
 class MultiArmedBandit:
-  def __init__(self, epsilon=0.9):
+  def __init__(self, epsilon=0.9, extra_files: Dict[str, str] | None = None):
     self.epsilon = epsilon
 
     base_dir = Path(__file__).resolve().parent
-    self.results_file, self.history_file = prepare_results(base_dir)
+    self.files = prepare_results(base_dir, extra_files)
 
     self.history_df = pd.DataFrame(columns=[
       "iteration", "reward", "timestamp"
@@ -28,8 +29,6 @@ class MultiArmedBandit:
       "count": "int64",
       "reward": "float64"
     })
-
-    self.load()
 
   def choose_action(self) -> Action:
     if self.q_df.empty:
@@ -77,21 +76,11 @@ class MultiArmedBandit:
   def save(self) -> None:
     if not self.q_df.empty:
       df_sorted = self.q_df.sort_values(by="reward", ascending=False)
-      df_sorted.to_csv(self.results_file, index=False, float_format="%.4f")
+      df_sorted.to_csv(self.files["results"], index=False, float_format="%.4f")
 
     if not self.history_df.empty:
-      self.history_df.to_csv(self.history_file, index=False,
+      self.history_df.to_csv(self.files["history"], index=False,
                              float_format="%.4f", date_format="%Y-%m-%d %H:%M:%S")
-
-  def load(self) -> None:
-    try:
-      self.q_df = pd.read_csv(self.results_file)
-    except FileNotFoundError:
-      pass
-    try:
-      self.history = pd.read_csv(self.history_file)
-    except FileNotFoundError:
-      pass
 
   def random_action(self) -> Action:
     sf = random.choice(range(6, 13))

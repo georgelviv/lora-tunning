@@ -1,22 +1,19 @@
 import pandas as pd
 import numpy as np
 from ..ucb import PrimaryAction, SecondaryAction
-from ..models import Action
+from ...models import Action
 from ..mab_reward_exponential import MultiArmedBanditRewardExponential
-import os
 import random
 import itertools
 from ..utils import current_limit_for_tp
 
 class GradientBandit(MultiArmedBanditRewardExponential):
-  def __init__(self, results_file, history_file, gradients_file, alpha=0.1, epsilon=0.9):
-    super().__init__(results_file, history_file, epsilon=epsilon, alpha=alpha)
+  def __init__(self, alpha=0.1, epsilon=0.9):
+    super().__init__(epsilon=epsilon, alpha=alpha, extra_files={
+      "gradients": "gradients.csv"
+    })
   
-    self.gradients_file = gradients_file
     self.alpha = alpha
-
-    if os.path.exists(self.gradients_file):
-      os.remove(self.gradients_file)
 
     self.gradients_df = pd.DataFrame(
       columns=["SF", "BW", "CR", "IH", "preference", "probability"]
@@ -83,7 +80,7 @@ class GradientBandit(MultiArmedBanditRewardExponential):
 
     if not self.gradients_df.empty:
       df_gradients_sorted = self.gradients_df.sort_values(by="preference", ascending=False)
-      df_gradients_sorted.to_csv(self.gradients_file, index=False, float_format="%.4f")
+      df_gradients_sorted.to_csv(self.files["gradients"], index=False, float_format="%.4f")
       
   def setup_initial_gradients_table(self) -> None:
     sf_values = list(range(6, 13))

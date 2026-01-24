@@ -65,16 +65,6 @@ def estimate_reward(state: State, action: Action):
   )
 
   return round(reward, 10)
-
-def current_limit_for_tp(tp: int) -> int:
-  if tp <= 7:
-    return 80
-  elif tp <= 13:
-    return 100
-  elif tp <= 17:
-    return 120
-  else:
-    return 140
   
 def getLogger() -> logging.Logger:
   logger = logging.getLogger(__name__)
