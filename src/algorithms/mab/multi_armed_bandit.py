@@ -8,11 +8,10 @@ from ..utils import prepare_results
 from pathlib import Path
 
 class MultiArmedBandit:
-  def __init__(self, epsilon=0.9, extra_files: Dict[str, str] | None = None):
+  def __init__(self, results_dir: Path, epsilon=0.9, extra_files: Dict[str, str] | None = None):
     self.epsilon = epsilon
 
-    base_dir = Path(__file__).resolve().parent
-    self.files = prepare_results(base_dir, extra_files)
+    self.files = prepare_results(results_dir, extra_files)
 
     self.history_df = pd.DataFrame(columns=[
       "iteration", "reward", "timestamp"

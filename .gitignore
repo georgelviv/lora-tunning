@@ -1,6 +1,5 @@
 .venv
 __pycache__
-*.csv
 *.log
 *.egg-info
 .DS_store

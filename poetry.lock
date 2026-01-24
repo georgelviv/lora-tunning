@@ -399,6 +399,26 @@ reference = "HEAD"
 resolved_reference = "f77555bc02b25efaa28e4a4598fc5a1d77314f5d"
 
 [[package]]
+name = "lora-simulation-model"
+version = "0.0.1"
+description = "LoRa Simulation Model"
+optional = false
+python-versions = ">=3.12"
+groups = ["main"]
+files = []
+develop = false
+
+[package.dependencies]
+numpy = ">=2.3.5"
+pytest = ">=8.0"
+
+[package.source]
+type = "git"
+url = "ssh://git@github.com/georgelviv/lora-simulation-model.git"
+reference = "HEAD"
+resolved_reference = "3f589c2fcb1e34e7d65a4e7e20436c62cbd15bb7"
+
+[[package]]
 name = "matplotlib-inline"
 version = "0.2.1"
 description = "Inline Matplotlib backend for Jupyter"
@@ -1055,4 +1075,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "ab7737c7ede0adb3150955386f9a080cf336d64840dc7afd0296ef89d52c43a7"
+content-hash = "b264bd00e74fdf400307c3eeeae3424d59c6ab7cade50966611bad7068620871"
