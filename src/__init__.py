@@ -3,5 +3,5 @@ from .utils import getLogger
 from .models import LoraBase, Algorithm
 from .algorithms import (
   MultiArmedBandit, MultiArmedBanditDecay,
-  MultiArmedBanditRewardExponential, GradientBandit, QLearning
+  MultiArmedBanditRewardExponential, GradientBandit, QLearning, UCB
 )

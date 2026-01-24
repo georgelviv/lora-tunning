@@ -5,17 +5,16 @@ import os
 import logging
 
 class LoraTunning:
-  def __init__(self, logger: logging.Logger, backend: LoraBase, algorithm: Algorithm) -> None:
+  def __init__(self, logger: logging.Logger, backend: LoraBase, algorithm: Algorithm, iterations: int = 1000) -> None:
     self.logger: logging.Logger = logger
     self.base_dir = os.path.dirname(os.path.abspath(__file__))
     self.lora: LoraBase = backend
     self.algorithm = algorithm
+    self.iterations = iterations
 
   async def run(self):
     self.logger.info(f"Starting {self.algorithm.__class__.__name__}")
     await self.lora.start()
-
-    total_iterations = 1000
 
     while True:
       action: Action = self.algorithm.choose_action()
@@ -26,11 +25,11 @@ class LoraTunning:
       self.algorithm.update(action, reward)
       self.algorithm.save()
 
-      if self.algorithm.get_iteration() > total_iterations:
+      if self.algorithm.get_iteration() > self.iterations:
         self.logger.info("Done!")
         break
       else:
-        self.logger.info(f"------ Iteration {self.algorithm.get_iteration()} / {total_iterations}  ----- ")
+        self.logger.info(f"------ Iteration {self.algorithm.get_iteration()} / {self.iterations}  ----- ")
 
   # async def gradient_bandits(self):
   #   results_file_path = os.path.join(self.base_dir, 'gradient_bandits/results.csv')

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from src import (
   LoraTunning, getLogger, LoraBase, Algorithm, MultiArmedBandit, MultiArmedBanditDecay,
-  MultiArmedBanditRewardExponential
+  MultiArmedBanditRewardExponential, UCB, GradientBandit
 )
 import logging
 from pathlib import Path
@@ -17,7 +17,9 @@ PORT_FILTER = os.getenv('PORT_FILTER')
 def get_alg(backend: LoraBase) -> Algorithm:
   # algorithm: Algorithm = MultiArmedBandit()
   # algorithm: Algorithm = MultiArmedBanditDecay()
-  algorithm: Algorithm = MultiArmedBanditRewardExponential()
+  # algorithm: Algorithm = MultiArmedBanditRewardExponential()
+  # algorithm: Algorithm = UCB()
+  algorithm: Algorithm = GradientBandit()
   results_dir = Path(__file__).parent / "results" / backend.name / algorithm.name
   algorithm.set_results_dir(results_dir)
   return algorithm
@@ -44,7 +46,7 @@ async def main():
   backend: LoraBase = get_backend(logger)
   alg: Algorithm = get_alg(backend)
 
-  loraTunning = LoraTunning(logger, backend, alg)
+  loraTunning = LoraTunning(logger, backend, alg, iterations=1000)
   await loraTunning.run()
 
 if __name__ == "__main__":
