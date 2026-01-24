@@ -15,6 +15,8 @@ class LoraTunning:
     self.logger.info(f"Starting {self.algorithm.__class__.__name__}")
     await self.lora.start()
 
+    total_iterations = 1000
+
     while True:
       action: Action = self.algorithm.choose_action()
       await self.lora.config_sync(1, action)
@@ -24,9 +26,11 @@ class LoraTunning:
       self.algorithm.update(action, reward)
       self.algorithm.save()
 
-      if self.algorithm.get_iteration() > 1000:
+      if self.algorithm.get_iteration() > total_iterations:
         self.logger.info("Done!")
         break
+      else:
+        self.logger.info(f"------ Iteration {self.algorithm.get_iteration()} / {total_iterations}  ----- ")
 
   # async def gradient_bandits(self):
   #   results_file_path = os.path.join(self.base_dir, 'gradient_bandits/results.csv')

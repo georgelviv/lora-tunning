@@ -2,7 +2,8 @@ import asyncio
 from dotenv import load_dotenv
 import os
 from src import (
-  LoraTunning, getLogger, LoraBase, Algorithm, MultiArmedBandit, MultiArmedBanditDecay
+  LoraTunning, getLogger, LoraBase, Algorithm, MultiArmedBandit, MultiArmedBanditDecay,
+  MultiArmedBanditRewardExponential
 )
 import logging
 from pathlib import Path
@@ -14,10 +15,11 @@ load_dotenv(override=True)
 PORT_FILTER = os.getenv('PORT_FILTER')
 
 def get_alg(backend: LoraBase) -> Algorithm:
-  algorithm: Algorithm = MultiArmedBandit()
+  # algorithm: Algorithm = MultiArmedBandit()
+  # algorithm: Algorithm = MultiArmedBanditDecay()
+  algorithm: Algorithm = MultiArmedBanditRewardExponential()
   results_dir = Path(__file__).parent / "results" / backend.name / algorithm.name
   algorithm.set_results_dir(results_dir)
-  # algorithm: Algorithm = MultiArmedBanditDecay()
   return algorithm
 
 def get_backend(logger: logging.Logger) -> LoraBase:
