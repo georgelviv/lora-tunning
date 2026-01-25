@@ -3,7 +3,8 @@
     "mabd",
     "prefs",
     "qlearning",
-    "rssi"
+    "rssi",
+    "usbserial"
   ],
   "files.exclude": {
     "**/.git": true,

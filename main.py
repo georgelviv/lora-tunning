@@ -1,50 +1,19 @@
 import asyncio
-from dotenv import load_dotenv
 import os
 from src import (
-  LoraTunning, getLogger, LoraBase, Algorithm, MultiArmedBandit, MultiArmedBanditDecay,
-  MultiArmedBanditRewardExponential, UCB, GradientBandit
+  LoraTunning, getLogger, LoraBase, Algorithm,
+  read_args, Args, get_backend, get_alg
 )
 import logging
 from pathlib import Path
-from lora_hardware_model import LoraHardwareModel
-from lora_simulation_model import LoraSimulationModel, EnvironmentModel, AreaType
-
-load_dotenv(override=True)
 
 PORT_FILTER = os.getenv('PORT_FILTER')
 
-def get_alg(backend: LoraBase) -> Algorithm:
-  # algorithm: Algorithm = MultiArmedBandit()
-  # algorithm: Algorithm = MultiArmedBanditDecay()
-  # algorithm: Algorithm = MultiArmedBanditRewardExponential()
-  # algorithm: Algorithm = UCB()
-  algorithm: Algorithm = GradientBandit()
-  results_dir = Path(__file__).parent / "results" / backend.name / algorithm.name
-  algorithm.set_results_dir(results_dir)
-  return algorithm
-
-def get_backend(logger: logging.Logger) -> LoraBase:
-  # backend: LoraBase = LoraHardwareModel(logger, PORT_FILTER)
-  env_model: EnvironmentModel = EnvironmentModel(
-    name=f"math-100-meters",
-    path_loss_exponent=2.5,
-    shadow_sigma_db=3.0,
-    sigma_noise_db=2.0,
-    distance_m=100,
-    hb_m = 1.2,
-    hm_m = 1.0,
-    area_type=AreaType.SUBURBAN,
-    description=f"Suburban 100 meters"
-  )
-  backend = LoraSimulationModel(logger, env_model)
-  return backend
-
-
-async def main():
+async def main() -> None:
+  args: Args = read_args()
   logger: logging.Logger = getLogger()
-  backend: LoraBase = get_backend(logger)
-  alg: Algorithm = get_alg(backend)
+  backend: LoraBase = get_backend(logger, args)
+  alg: Algorithm = get_alg(backend, args)
 
   loraTunning = LoraTunning(logger, backend, alg, iterations=1000)
   await loraTunning.run()

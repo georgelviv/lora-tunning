@@ -1,6 +1,63 @@
-from .models import State, Action
+import argparse
+import sys
+from .models import Algorithm, ArgAlg, Args, LoraBase, State, Action, ArgEnv
 import logging
 from .constants import RSSI_MAX, SX1276_SENSITIVITY, SX1276_TX_CURRENT
+from lora_hardware_model import LoraHardwareModel
+from lora_simulation_model import LoraSimulationModel, EnvironmentModel, AreaType
+from .algorithms import MultiArmedBandit
+from pathlib import Path
+
+def read_args() -> Args:
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument("--env", type=str, default='simulation')
+  parser.add_argument("--port", type=str, default='/dev/cu.usbserial') 
+  parser.add_argument('--alg', type=str, default='mab')
+
+  args = parser.parse_args()
+  return {
+    'env': ArgEnv(args.env),
+    'port': args.port,
+    'alg': ArgAlg(args.alg)
+  }
+
+def get_backend(logger: logging.Logger, args: Args) -> LoraBase:
+  env: ArgEnv = args['env']
+  if env == ArgEnv.HARDWARE:
+    backend: LoraBase = LoraHardwareModel(logger, args.port)
+  elif env== ArgEnv.SIMULATION:
+    env_model: EnvironmentModel = EnvironmentModel(
+      name=f"math-100-meters",
+      path_loss_exponent=2.5,
+      shadow_sigma_db=3.0,
+      sigma_noise_db=2.0,
+      distance_m=100,
+      hb_m = 1.2,
+      hm_m = 1.0,
+      area_type=AreaType.SUBURBAN,
+      description=f"Suburban 100 meters"
+    )
+    backend = LoraSimulationModel(logger, env_model)
+  else:
+    logger.error(f'Unknown Env {env}')
+    sys.exit(1)
+  return backend
+
+def get_alg(backend: LoraBase, args: Args) -> Algorithm:
+  alg: ArgAlg = args['alg']
+  if alg == ArgAlg.mab:
+    algorithm: Algorithm = MultiArmedBandit()
+  else:
+    logger.error(f'Unknown Alg {alg}')
+    sys.exit(1)
+  # algorithm: Algorithm = MultiArmedBanditDecay()
+  # algorithm: Algorithm = MultiArmedBanditRewardExponential()
+  # algorithm: Algorithm = UCB()
+  # algorithm: Algorithm = GradientBandit()
+  results_dir = Path(__file__).parent.parent / "results" / backend.name / algorithm.name
+  algorithm.set_results_dir(results_dir)
+  return algorithm
 
 def estimate_tx_current(tx_power: int) -> float:
   powers = sorted(SX1276_TX_CURRENT.keys())
@@ -47,22 +104,31 @@ def estimate_reward(state: State, action: Action):
     action['CL']
   )
 
-  b = norm(state['BPS'], 0, 3000)
-  e = norm(energy, 0, 100)
-  d = norm(state['DELAY'], 0, 60000)
-  s = norm(state['SNR'], 0, 20)
+  bps = norm(state['BPS'], 0, 3000)
+  energy_norm = norm(energy, 0, 100)
+  delay = norm(state['DELAY'], 0, 60000)
+  snr = norm(state['SNR'], 0, 20)
   toa = norm(state['TOA'], 0, 10000)
 
   rssi_score = estimate_rssi_score(state['RSSI'])
 
   reward = (
-    0.4 * b
-    + 0.2 * s
+    0.4 * bps
+    + 0.2 * snr
     + 0.2 * rssi_score
-    - 0.1 * e
-    - 0.05 * d
+    - 0.1 * energy_norm
+    - 0.05 * delay
     - 0.05 * toa
   )
+
+  print('----REWARD START----')
+  print('BPS', bps)
+  print('SNR', snr)
+  print('RSSI', rssi_score)
+  print('ENERGY', energy_norm)
+  print('ETX', state['ETX'])
+
+  print('----REWARD END----')
 
   return round(reward, 10)
   

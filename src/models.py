@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, TypedDict
+from typing import TypedDict
+from enum import StrEnum
 
 class State(TypedDict):
   DELAY: float
@@ -22,6 +23,18 @@ class Action(TypedDict):
   PL: int
   CL: int
   RT: int
+
+class ArgEnv(StrEnum):
+  SIMULATION = 'simulation'
+  HARDWARE = 'hardware'
+
+class ArgAlg(StrEnum):
+  mab = 'mab'
+
+class Args(TypedDict):
+  env: ArgEnv
+  port: str
+  alg: ArgAlg
 
 class LoraBase(ABC):
   @property
