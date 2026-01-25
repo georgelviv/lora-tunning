@@ -9,7 +9,6 @@ dependencies = [
   "pandas>=2.0",
   "pyserial>=3.5",
   "python-dotenv>=1.0",
-  "pytest>=8.0",
   "lora-hardware-model @ git+ssh://git@github.com/georgelviv/lora-hardware-model.git",
   "lora-simulation-model @ git+ssh://git@github.com/georgelviv/lora-simulation-model.git",
   "matplotlib (>=3.10.8,<4.0.0)"
@@ -19,5 +18,5 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 [dependency-groups]
 dev = [
-    "ipykernel (>=7.1.0,<8.0.0)"
+    "ipykernel (>=7.1.0,<8.0.0)",
 ]

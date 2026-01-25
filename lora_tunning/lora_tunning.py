@@ -1,6 +1,6 @@
 import logging
 from .models import Action, Args, State, LoraBase, Algorithm
-from .utils import estimate_reward
+from .reward import estimate_reward
 import os
 import logging
 

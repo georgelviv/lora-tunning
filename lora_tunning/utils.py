@@ -6,7 +6,6 @@ from lora_hardware_model import LoraHardwareModel
 from lora_simulation_model import LoraSimulationModel, EnvironmentModel, AreaType
 from .algorithms import MultiArmedBandit
 from pathlib import Path
-from .reward import estimate_reward
 
 def read_args() -> Args:
   parser = argparse.ArgumentParser()

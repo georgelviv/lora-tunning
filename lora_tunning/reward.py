@@ -67,7 +67,7 @@ def estimate_reward(state: State, action: Action):
   print('BPS', bps)
   print('SNR', snr)
   print('RSSI', rssi_score)
-  print('ENERGY', energy_norm)
+  print('ENERGY', energy)
   print('ETX', state['ETX'])
 
   print('----REWARD END----')

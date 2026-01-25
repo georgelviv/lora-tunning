@@ -1,6 +1,6 @@
 import asyncio
 import os
-from src import (
+from lora_tunning import (
   LoraTunning, getLogger, LoraBase, Algorithm,
   read_args, Args, get_backend, get_alg
 )
