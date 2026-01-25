@@ -1,12 +1,9 @@
 import asyncio
-import os
 from lora_tunning import (
   LoraTunning, getLogger, LoraBase, Algorithm,
   read_args, Args, get_backend, get_alg
 )
 import logging
-
-PORT_FILTER = os.getenv('PORT_FILTER')
 
 async def main() -> None:
   args: Args = read_args()

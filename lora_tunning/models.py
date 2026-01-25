@@ -11,6 +11,7 @@ class State(TypedDict):
   BPS: float
   CHC: float
   ATT: float
+  ETX: float
 
 class Action(TypedDict):
   SF: int
@@ -30,6 +31,7 @@ class ArgEnv(StrEnum):
 
 class ArgAlg(StrEnum):
   mab = 'mab'
+  mab_decay = 'mab_decay'
 
 class Args(TypedDict):
   env: ArgEnv

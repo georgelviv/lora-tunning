@@ -4,7 +4,7 @@ from .models import Algorithm, ArgAlg, Args, LoraBase, State, Action, ArgEnv
 import logging
 from lora_hardware_model import LoraHardwareModel
 from lora_simulation_model import LoraSimulationModel, EnvironmentModel, AreaType
-from .algorithms import MultiArmedBandit
+from .algorithms import MultiArmedBandit, MultiArmedBanditDecay
 from pathlib import Path
 
 def read_args() -> Args:
@@ -14,8 +14,8 @@ def read_args() -> Args:
   parser.add_argument("--port", type=str, default='/dev/cu.usbserial') 
   parser.add_argument('--alg', type=str, default='mab')
   parser.add_argument('--iterations', type=int, default=1000)
-
   args = parser.parse_args()
+
   return {
     'env': ArgEnv(args.env),
     'port': args.port,
@@ -26,7 +26,7 @@ def read_args() -> Args:
 def get_backend(logger: logging.Logger, args: Args) -> LoraBase:
   env: ArgEnv = args['env']
   if env == ArgEnv.HARDWARE:
-    backend: LoraBase = LoraHardwareModel(logger, args.port)
+    backend: LoraBase = LoraHardwareModel(logger, args['port'])
   elif env== ArgEnv.SIMULATION:
     env_model: EnvironmentModel = EnvironmentModel(
       name=f"math-100-meters",
@@ -49,10 +49,11 @@ def get_alg(backend: LoraBase, args: Args) -> Algorithm:
   alg: ArgAlg = args['alg']
   if alg == ArgAlg.mab:
     algorithm: Algorithm = MultiArmedBandit()
+  elif alg == ArgAlg.mab_decay:
+    algorithm: Algorithm = MultiArmedBanditDecay()
   else:
     logger.error(f'Unknown Alg {alg}')
     sys.exit(1)
-  # algorithm: Algorithm = MultiArmedBanditDecay()
   # algorithm: Algorithm = MultiArmedBanditRewardExponential()
   # algorithm: Algorithm = UCB()
   # algorithm: Algorithm = GradientBandit()
