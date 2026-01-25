@@ -35,6 +35,7 @@ class Args(TypedDict):
   env: ArgEnv
   port: str
   alg: ArgAlg
+  iterations: int
 
 class LoraBase(ABC):
   @property

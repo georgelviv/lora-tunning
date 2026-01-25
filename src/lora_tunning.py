@@ -1,19 +1,19 @@
 import logging
-from .models import Action, State, LoraBase, Algorithm
+from .models import Action, Args, State, LoraBase, Algorithm
 from .utils import estimate_reward
 import os
 import logging
 
 class LoraTunning:
-  def __init__(self, logger: logging.Logger, backend: LoraBase, algorithm: Algorithm, iterations: int = 1000) -> None:
+  def __init__(self, logger: logging.Logger, backend: LoraBase, algorithm: Algorithm, args: Args) -> None:
     self.logger: logging.Logger = logger
     self.base_dir = os.path.dirname(os.path.abspath(__file__))
     self.lora: LoraBase = backend
     self.algorithm = algorithm
-    self.iterations = iterations
+    self.iterations = args["iterations"]
 
   async def run(self):
-    self.logger.info(f"Starting {self.algorithm.__class__.__name__}")
+    self.logger.info(f"Starting {self.algorithm.__class__.__name__} ")
     await self.lora.start()
 
     while True:

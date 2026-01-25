@@ -5,7 +5,6 @@ from src import (
   read_args, Args, get_backend, get_alg
 )
 import logging
-from pathlib import Path
 
 PORT_FILTER = os.getenv('PORT_FILTER')
 
@@ -15,7 +14,7 @@ async def main() -> None:
   backend: LoraBase = get_backend(logger, args)
   alg: Algorithm = get_alg(backend, args)
 
-  loraTunning = LoraTunning(logger, backend, alg, iterations=1000)
+  loraTunning = LoraTunning(logger, backend, alg, args)
   await loraTunning.run()
 
 if __name__ == "__main__":
