@@ -1,0 +1,9 @@
+{
+  "algorithm": "mab",
+  "environment": "simulation",
+  "time_diff": 4,
+  "high_rewards": 85,
+  "convergence_iteration": null,
+  "rewards_sum": 163.01779999999997,
+  "highest_reward": 0.3935
+}

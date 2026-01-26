@@ -1,0 +1,9 @@
+{
+  "algorithm": "gradient",
+  "environment": "simulation",
+  "time_diff": 6,
+  "high_rewards": 54,
+  "convergence_iteration": null,
+  "rewards_sum": 202.0287,
+  "highest_reward": 0.4553
+}

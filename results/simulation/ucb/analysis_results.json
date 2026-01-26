@@ -1,0 +1,9 @@
+{
+  "algorithm": "ucb",
+  "environment": "simulation",
+  "time_diff": 5,
+  "high_rewards": 236,
+  "convergence_iteration": 840,
+  "rewards_sum": 247.0399,
+  "highest_reward": 0.4515
+}

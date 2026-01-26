@@ -17,16 +17,18 @@ class LoraTunning:
     await self.lora.start()
 
     while True:
+      self.logger.info(f"------ Iteration {self.algorithm.get_iteration() + 1} / {self.iterations}  ----- ")
       action: Action = self.algorithm.choose_action()
       await self.lora.config_sync(1, action)
       action: Action = await self.lora.config_get()
       state: State = await self.lora.ping(id=1)
       reward = estimate_reward(state)
+      self.logger.info(f'Reward {reward}')
       self.algorithm.update(action, reward)
       self.algorithm.save()
 
       if self.algorithm.get_iteration() >= self.iterations:
-        self.logger.info("Done!")
+        self.logger.info("Running done")
         break
-      else:
-        self.logger.info(f"------ Iteration {self.algorithm.get_iteration()} / {self.iterations}  ----- ")
+
+        

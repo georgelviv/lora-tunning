@@ -1,0 +1,9 @@
+{
+  "algorithm": "mab_decay",
+  "environment": "simulation",
+  "time_diff": 3,
+  "high_rewards": 0,
+  "convergence_iteration": null,
+  "rewards_sum": 231.6269,
+  "highest_reward": 0.2979
+}

@@ -31,7 +31,10 @@ class ArgEnv(StrEnum):
 
 class ArgAlg(StrEnum):
   mab = 'mab'
-  mab_decay = 'mab_decay'
+  mab_decay = 'mab_decay',
+  mab_exponential = 'mab_exponential',
+  ucb = 'ucb',
+  gradient = 'gradient'
 
 class Args(TypedDict):
   env: ArgEnv

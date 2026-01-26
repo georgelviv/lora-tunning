@@ -4,7 +4,10 @@ from .models import Algorithm, ArgAlg, Args, LoraBase, State, Action, ArgEnv
 import logging
 from lora_hardware_model import LoraHardwareModel
 from lora_simulation_model import LoraSimulationModel, EnvironmentModel, AreaType
-from .algorithms import MultiArmedBandit, MultiArmedBanditDecay
+from .algorithms import (
+  MultiArmedBandit, MultiArmedBanditDecay, MultiArmedBanditRewardExponential,
+  UCB, GradientBandit
+)
 from pathlib import Path
 
 def read_args() -> Args:
@@ -34,8 +37,8 @@ def get_backend(logger: logging.Logger, args: Args) -> LoraBase:
       shadow_sigma_db=3.0,
       sigma_noise_db=2.0,
       distance_m=100,
-      hb_m = 1.2,
-      hm_m = 1.0,
+      hb_m = 2,
+      hm_m = 5,
       area_type=AreaType.SUBURBAN,
       description=f"Suburban 100 meters"
     )
@@ -45,19 +48,23 @@ def get_backend(logger: logging.Logger, args: Args) -> LoraBase:
     sys.exit(1)
   return backend
 
-def get_alg(backend: LoraBase, args: Args) -> Algorithm:
+def get_alg(logger: logging.Logger, backend: LoraBase, args: Args) -> Algorithm:
   alg: ArgAlg = args['alg']
   if alg == ArgAlg.mab:
     algorithm: Algorithm = MultiArmedBandit()
   elif alg == ArgAlg.mab_decay:
     algorithm: Algorithm = MultiArmedBanditDecay()
+  elif alg == ArgAlg.mab_exponential:
+    algorithm: Algorithm = MultiArmedBanditRewardExponential()
+  elif alg == ArgAlg.ucb:
+    algorithm: Algorithm = UCB()
+  elif alg == ArgAlg.gradient:
+    algorithm: Algorithm = GradientBandit()
   else:
     logger.error(f'Unknown Alg {alg}')
     sys.exit(1)
-  # algorithm: Algorithm = MultiArmedBanditRewardExponential()
-  # algorithm: Algorithm = UCB()
-  # algorithm: Algorithm = GradientBandit()
-  results_dir = Path(__file__).parent.parent / "results" / backend.name / algorithm.name
+
+  results_dir = get_results_dir(backend, algorithm)
   algorithm.set_results_dir(results_dir)
   return algorithm
 
@@ -79,3 +86,6 @@ def getLogger() -> logging.Logger:
   logger.addHandler(file_handler)
 
   return logger
+
+def get_results_dir(backend: LoraBase, algorithm: Algorithm) -> Path:
+  return Path(__file__).parent.parent / "results" / backend.name / algorithm.name
