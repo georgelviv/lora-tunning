@@ -42,6 +42,8 @@ class Args(TypedDict):
   alg: ArgAlg
   iterations: int
   epsilon: float
+  alpha: float
+  exploration_factor: float
 
 class LoraBase(ABC):
   @property
