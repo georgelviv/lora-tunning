@@ -11,6 +11,12 @@ class MultiArmedBandit(Algorithm):
   @property
   def name(self) -> str:
     return "mab"
+  
+  @property
+  def configs(self) -> Dict[str, float]:
+    return {
+      'epsilon': self.epsilon
+    }
 
   def __init__(self, epsilon=0.9):
     self.epsilon = epsilon

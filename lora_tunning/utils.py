@@ -17,13 +17,15 @@ def read_args() -> Args:
   parser.add_argument("--port", type=str, default='/dev/cu.usbserial') 
   parser.add_argument('--alg', type=str, default='mab')
   parser.add_argument('--iterations', type=int, default=1000)
+  parser.add_argument('--epsilon', type=float, default=0.9)
   args = parser.parse_args()
 
   return {
     'env': ArgEnv(args.env),
     'port': args.port,
     'alg': ArgAlg(args.alg),
-    'iterations': args.iterations
+    'iterations': args.iterations,
+    'epsilon': args.epsilon
   }
 
 def get_backend(logger: logging.Logger, args: Args) -> LoraBase:
@@ -50,6 +52,7 @@ def get_backend(logger: logging.Logger, args: Args) -> LoraBase:
 
 def get_alg(logger: logging.Logger, backend: LoraBase, args: Args) -> Algorithm:
   alg: ArgAlg = args['alg']
+  epsilon: float = args['epsilon']
   if alg == ArgAlg.mab:
     algorithm: Algorithm = MultiArmedBandit()
   elif alg == ArgAlg.mab_decay:
@@ -57,7 +60,7 @@ def get_alg(logger: logging.Logger, backend: LoraBase, args: Args) -> Algorithm:
   elif alg == ArgAlg.mab_exponential:
     algorithm: Algorithm = MultiArmedBanditRewardExponential()
   elif alg == ArgAlg.ucb:
-    algorithm: Algorithm = UCB()
+    algorithm: Algorithm = UCB(epsilon=epsilon)
   elif alg == ArgAlg.gradient:
     algorithm: Algorithm = GradientBandit()
   else:

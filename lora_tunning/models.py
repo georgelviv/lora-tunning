@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TypedDict
+from typing import Dict, TypedDict
 from enum import StrEnum
 
 class State(TypedDict):
@@ -41,6 +41,7 @@ class Args(TypedDict):
   port: str
   alg: ArgAlg
   iterations: int
+  epsilon: float
 
 class LoraBase(ABC):
   @property
@@ -73,7 +74,12 @@ class Algorithm(ABC):
   @property
   @abstractmethod
   def name(self) -> str:
-      pass
+    pass
+
+  @property
+  @abstractmethod
+  def configs(self) -> Dict[str, float]:
+    pass
   
   @abstractmethod
   def set_results_dir(results_dir: Path) -> None:

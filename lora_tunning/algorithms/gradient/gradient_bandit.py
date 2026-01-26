@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 import pandas as pd
 import numpy as np
 from ..ucb import PrimaryAction, SecondaryAction
@@ -12,6 +13,13 @@ class GradientBandit(MultiArmedBanditRewardExponential):
   @property
   def name(self) -> str:
     return "gradient"
+  
+  @property
+  def configs(self) -> Dict[str, float]:
+    return {
+      'epsilon': self.epsilon,
+      'alpha': self.alpha
+    }
 
   def __init__(self, alpha=0.1, epsilon=0.9):
     super().__init__(epsilon=epsilon, alpha=alpha)

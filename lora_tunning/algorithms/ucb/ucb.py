@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 from ..mab_reward_exponential import MultiArmedBanditRewardExponential
 from ...models import Action
 import random
@@ -12,6 +13,14 @@ class UCB(MultiArmedBanditRewardExponential):
   @property
   def name(self) -> str:
     return "ucb"
+  
+  @property
+  def configs(self) -> Dict[str, float]:
+    return {
+      'epsilon': self.epsilon,
+      'alpha': self.alpha,
+      'exploration_factor': self.exploration_factor
+    }
 
   def __init__(self, epsilon=0.9,
                alpha=0.3, exploration_factor=0.2):

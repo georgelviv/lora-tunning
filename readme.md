@@ -13,6 +13,7 @@ poetry run python main.py --env hardware --alg mab_decay
 - `--env` - environment. Options `hardware`, `simulation`. Default `simulation`
 - `--alg` - algorithm. Options `mab`, `mab_decay`, `mab_exponential`, `ucb`, `gradient`. Default `mab`
 - `--iterations` - iterations count. Default `1000`
+- `--epsilon` - epsilon value for algorithms. Default `0.9`
 
 ## Tests
 

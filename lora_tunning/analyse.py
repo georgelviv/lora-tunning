@@ -42,6 +42,7 @@ def analyse(logger: logging.Logger, backend: LoraBase, algorithm: Algorithm) -> 
   results = {
     'algorithm': algorithm.name,
     'environment': backend.name,
+    'algorithm_configs': algorithm.configs,
     'time_diff': count_time(history_df),
     'high_rewards': count_high_rewards(history_df),
     'convergence_iteration': get_convergence_iteration(history_df),
