@@ -1,0 +1,12 @@
+{
+  "algorithm": "mab",
+  "environment": "hardware",
+  "algorithm_configs": {
+    "epsilon": 0.9
+  },
+  "time_diff": 9850,
+  "high_rewards": 427,
+  "convergence_iteration": 49,
+  "rewards_sum": 291.8366,
+  "highest_reward": 0.4817
+}
