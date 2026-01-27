@@ -44,6 +44,9 @@ class Args(TypedDict):
   epsilon: float
   alpha: float
   exploration_factor: float
+  has_delays: bool
+  high_reward: float
+  results_dir_name: str
 
 class LoraBase(ABC):
   @property

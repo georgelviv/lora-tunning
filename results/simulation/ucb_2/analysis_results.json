@@ -1,0 +1,14 @@
+{
+  "algorithm": "ucb",
+  "environment": "simulation",
+  "algorithm_configs": {
+    "epsilon": 0.01,
+    "alpha": 0.2,
+    "exploration_factor": 0.1
+  },
+  "time_diff": 5,
+  "high_rewards": 773,
+  "convergence_iteration": 169,
+  "rewards_sum": 335.8208,
+  "highest_reward": 0.4265
+}

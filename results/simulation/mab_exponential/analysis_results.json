@@ -1,9 +1,13 @@
 {
   "algorithm": "mab_exponential",
   "environment": "simulation",
+  "algorithm_configs": {
+    "epsilon": 0.01,
+    "alpha": 0.3
+  },
   "time_diff": 3,
-  "high_rewards": 791,
-  "convergence_iteration": 269,
-  "rewards_sum": 320.6288,
-  "highest_reward": 0.4058
+  "high_rewards": 817,
+  "convergence_iteration": 187,
+  "rewards_sum": 396.7606,
+  "highest_reward": 0.4982
 }

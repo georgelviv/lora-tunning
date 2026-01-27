@@ -1,9 +1,12 @@
 {
   "algorithm": "mab",
   "environment": "simulation",
+  "algorithm_configs": {
+    "epsilon": 0.9
+  },
   "time_diff": 4,
-  "high_rewards": 85,
+  "high_rewards": 102,
   "convergence_iteration": null,
-  "rewards_sum": 163.01779999999997,
-  "highest_reward": 0.3935
+  "rewards_sum": 173.93019999999999,
+  "highest_reward": 0.4503
 }

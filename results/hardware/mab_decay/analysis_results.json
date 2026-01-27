@@ -1,0 +1,12 @@
+{
+  "algorithm": "mab_decay",
+  "environment": "hardware",
+  "algorithm_configs": {
+    "epsilon": 0.01
+  },
+  "time_diff": 5293,
+  "high_rewards": 859,
+  "convergence_iteration": 56,
+  "rewards_sum": 368.3923,
+  "highest_reward": 0.4196
+}

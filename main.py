@@ -13,7 +13,7 @@ async def main() -> None:
 
   loraTunning = LoraTunning(logger, backend, algorithm, args)
   await loraTunning.run()
-  analyse(logger, backend, algorithm)
+  analyse(logger, backend, algorithm, args)
 
 if __name__ == "__main__":
   asyncio.run(main())

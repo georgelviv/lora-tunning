@@ -13,6 +13,9 @@ poetry run python main.py --env hardware --alg mab_decay
 - `--env` - environment. Options `hardware`, `simulation`. Default `simulation`
 - `--alg` - algorithm. More in algorithms sections Options `mab` Default `mab`
 - `--iterations` - iterations count. Default `1000`
+- `--has_delays` - has delays. Default `False`
+- `--high_reward` - definition of high reward. Default `0.35`
+- `--results_dir_name` - results folder name. If not provided, name of algorithm will be used.
 
 ## Algorithms
 

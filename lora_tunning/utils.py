@@ -20,6 +20,15 @@ def read_args() -> Args:
   parser.add_argument('--epsilon', type=float, default=0.9)
   parser.add_argument('--alpha', type=float, default=0.3)
   parser.add_argument('--exploration_factor', type=float, default=0.2)
+  parser.add_argument(
+    '--has_delays',
+    action=argparse.BooleanOptionalAction,
+    default=False,
+    help='Enable delay'
+  )
+
+  parser.add_argument('--high_reward', type=float, default=0.35)
+  parser.add_argument('--results_dir_name', type=str)
 
   args = parser.parse_args()
 
@@ -30,7 +39,10 @@ def read_args() -> Args:
     'iterations': args.iterations,
     'epsilon': args.epsilon,
     'alpha': args.alpha,
-    'exploration_factor': args.exploration_factor
+    'exploration_factor': args.exploration_factor,
+    'has_delays': args.has_delays,
+    'high_reward': args.high_reward,
+    'results_dir_name': args.results_dir_name
   }
 
 def get_backend(logger: logging.Logger, args: Args) -> LoraBase:

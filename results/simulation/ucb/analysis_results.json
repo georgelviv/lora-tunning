@@ -3,12 +3,12 @@
   "environment": "simulation",
   "algorithm_configs": {
     "epsilon": 0.01,
-    "alpha": 0.2,
-    "exploration_factor": 0.1
+    "alpha": 0.3,
+    "exploration_factor": 0.2
   },
   "time_diff": 5,
-  "high_rewards": 773,
-  "convergence_iteration": 169,
-  "rewards_sum": 335.8208,
-  "highest_reward": 0.4265
+  "high_rewards": 328,
+  "convergence_iteration": 754,
+  "rewards_sum": 258.41020000000003,
+  "highest_reward": 0.5003
 }

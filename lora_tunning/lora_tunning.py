@@ -11,6 +11,7 @@ class LoraTunning:
     self.base_dir = os.path.dirname(os.path.abspath(__file__))
     self.lora: LoraBase = backend
     self.algorithm = algorithm
+    self.has_delays = args['has_delays']
     self.iterations = args["iterations"]
 
   async def run(self):
@@ -41,9 +42,11 @@ class LoraTunning:
     attempts = 10
     for attempt in range(1, attempts + 1):
       config_is_updated: bool = await self.lora.config_sync(1, action)
-      time.sleep(2)
+      if self.has_delays:
+        time.sleep(2)
 
       if config_is_updated:
         break
       else:
-        time.sleep(attempt ** 2)
+        if self.has_delays:
+          time.sleep(attempt ** 2)

@@ -5,9 +5,9 @@
     "epsilon": 0.01,
     "alpha": 0.3
   },
-  "time_diff": 6,
-  "high_rewards": 20,
+  "time_diff": 7,
+  "high_rewards": 0,
   "convergence_iteration": null,
-  "rewards_sum": 182.6848,
-  "highest_reward": 0.4045
+  "rewards_sum": 172.1798,
+  "highest_reward": 0.3401
 }
