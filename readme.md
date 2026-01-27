@@ -36,15 +36,15 @@ Multi Armed Bandit with exponential reward. To use this algorithm, run:
 
 Configurations:
 `--epsilon` - epsilon value. Default `0.9`
-`--alpha` - alpha value. Default `0.3`
+`--alpha` - decay with every iteration value. Default `0.3`
 
 ### UCB
 Upper Confidence Bound. To use this algorithm, run:
 `poetry run python main.py --alg ucb`
 
 Configurations:
-`--epsilon` - epsilon value. Default `0.9`
-`--alpha` - alpha value. Default `0.3`
+`--epsilon` - epsilon for secondary action. Default `0.9`
+`--alpha` - decay with every iteration value. Default `0.3`
 `--exploration_factor` - exploration factor value. Default `0.2`
 
 ### Gradient

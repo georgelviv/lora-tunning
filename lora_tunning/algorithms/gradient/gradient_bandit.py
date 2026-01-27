@@ -21,7 +21,7 @@ class GradientBandit(MultiArmedBanditRewardExponential):
       'alpha': self.alpha
     }
 
-  def __init__(self, alpha=0.1, epsilon=0.9):
+  def __init__(self, epsilon=0.9, alpha=0.3):
     super().__init__(epsilon=epsilon, alpha=alpha)
   
     self.alpha = alpha

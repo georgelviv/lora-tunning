@@ -68,7 +68,7 @@ class LoraBase(ABC):
     pass
 
   @abstractmethod
-  async def config_sync(self, id: int, params) -> None:
+  async def config_sync(self, id: int, params) -> bool:
     pass
 
 
