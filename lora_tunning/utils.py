@@ -91,11 +91,11 @@ def get_alg(logger: logging.Logger, backend: LoraBase, args: Args) -> Algorithm:
     logger.error(f'Unknown Alg {alg}')
     sys.exit(1)
 
-  results_dir = get_results_dir(backend, algorithm)
+  results_dir = get_results_dir(backend, algorithm, args)
   algorithm.set_results_dir(results_dir)
   return algorithm
 
-def getLogger() -> logging.Logger:
+def get_logger() -> logging.Logger:
   logger = logging.getLogger(__name__)
   logger.setLevel(logging.INFO)
   
@@ -114,5 +114,8 @@ def getLogger() -> logging.Logger:
 
   return logger
 
-def get_results_dir(backend: LoraBase, algorithm: Algorithm) -> Path:
-  return Path(__file__).parent.parent / "results" / backend.name / algorithm.name
+def get_results_dir(backend: LoraBase, algorithm: Algorithm, args: Args) -> Path:
+  result_dir_name = algorithm.name
+  if args['results_dir_name']:
+    result_dir_name = args['results_dir_name']
+  return Path(__file__).parent.parent / "results" / backend.name / result_dir_name

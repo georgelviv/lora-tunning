@@ -1,13 +1,13 @@
 import asyncio
 from lora_tunning import (
-  LoraTunning, getLogger, LoraBase, Algorithm,
+  LoraTunning, get_logger, LoraBase, Algorithm,
   read_args, Args, get_backend, get_alg, analyse
 )
 import logging
 
 async def main() -> None:
   args: Args = read_args()
-  logger: logging.Logger = getLogger()
+  logger: logging.Logger = get_logger()
   backend: LoraBase = get_backend(logger, args)
   algorithm: Algorithm = get_alg(logger, backend, args)
 

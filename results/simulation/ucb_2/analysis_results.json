@@ -7,8 +7,8 @@
     "exploration_factor": 0.1
   },
   "time_diff": 5,
-  "high_rewards": 773,
-  "convergence_iteration": 169,
-  "rewards_sum": 335.8208,
-  "highest_reward": 0.4265
+  "high_rewards": 677,
+  "convergence_iteration": 318,
+  "rewards_sum": 367.8152,
+  "highest_reward": 0.4777
 }

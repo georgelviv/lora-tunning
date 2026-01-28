@@ -29,7 +29,7 @@ def get_highest_reward(history_df: pd.DataFrame) -> int:
   return highest_reward
 
 def analyse(logger: logging.Logger, backend: LoraBase, algorithm: Algorithm, args: Args) -> None:
-  results_dir = get_results_dir(backend, algorithm)
+  results_dir = get_results_dir(backend, algorithm, args)
   history_path = results_dir / "history.csv"
   history_df = pd.read_csv(history_path)
 

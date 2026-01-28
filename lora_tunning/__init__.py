@@ -1,6 +1,6 @@
 from .lora_tunning import LoraTunning
 from .utils import (
-  getLogger, read_args, get_backend, get_alg
+  get_logger, read_args, get_backend, get_alg
 )
 from .analyse import analyse
 from .models import LoraBase, Algorithm, Args
