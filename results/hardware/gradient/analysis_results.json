@@ -1,0 +1,13 @@
+{
+  "algorithm": "gradient",
+  "environment": "hardware",
+  "algorithm_configs": {
+    "epsilon": 0.01,
+    "alpha": 0.3
+  },
+  "time_diff": 4007,
+  "high_rewards": 85,
+  "convergence_iteration": null,
+  "rewards_sum": 283.2541,
+  "highest_reward": 0.4688
+}

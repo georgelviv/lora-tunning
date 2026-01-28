@@ -1,0 +1,10 @@
+{
+  "time_diff": 1550,
+  "high_rewards": 815,
+  "convergence_iteration": 236,
+  "rewards_sum": 365.3010076298,
+  "highest_reward": 0.3904143333,
+  "algorithm": "mab_decay",
+  "environment": "old-results",
+  "algorithm_configs": {}
+}

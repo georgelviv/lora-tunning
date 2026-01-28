@@ -1,3 +1,4 @@
+from pathlib import Path
 from .utils import get_results_dir
 import logging
 from .models import Args, LoraBase, Algorithm
@@ -28,27 +29,34 @@ def get_highest_reward(history_df: pd.DataFrame) -> int:
   highest_reward = history_df['reward'].max()
   return highest_reward
 
-def analyse(logger: logging.Logger, backend: LoraBase, algorithm: Algorithm, args: Args) -> None:
-  results_dir = get_results_dir(backend, algorithm, args)
-  history_path = results_dir / "history.csv"
+def ger_analysis_results(history_path: Path, high_reward: float):
   history_df = pd.read_csv(history_path)
 
   history_df['timestamp'] = pd.to_datetime(history_df['timestamp'])
   history_df['reward_ma'] = history_df['reward'].rolling(window=50).mean()
-  analysis_results_path = results_dir / 'analysis_results.json'
-
-  high_reward: float = args['high_reward']
 
   results = {
-    'algorithm': algorithm.name,
-    'environment': backend.name,
-    'algorithm_configs': algorithm.configs,
     'time_diff': count_time(history_df),
     'high_rewards': count_high_rewards(history_df, high_reward),
     'convergence_iteration': get_convergence_iteration(history_df, high_reward),
     'rewards_sum': get_rewards_sum(history_df),
     'highest_reward': get_highest_reward(history_df)
   }
+
+  return results
+
+def analyse(logger: logging.Logger, backend: LoraBase, algorithm: Algorithm, args: Args) -> None:
+  results_dir = get_results_dir(backend, algorithm, args)
+  history_path = results_dir / "history.csv"
+
+  analysis_results_path = results_dir / 'analysis_results.json'
+
+  high_reward: float = args['high_reward']
+
+  results = ger_analysis_results(history_path, high_reward)
+  results['algorithm'] = algorithm.name
+  results['environment'] = backend.name
+  results['algorithm_configs'] = algorithm.configs
 
   with open(analysis_results_path, "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2)

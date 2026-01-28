@@ -1,0 +1,13 @@
+{
+  "algorithm": "mab_exponential",
+  "environment": "hardware",
+  "algorithm_configs": {
+    "epsilon": 0.01,
+    "alpha": 0.3
+  },
+  "time_diff": 1950,
+  "high_rewards": 816,
+  "convergence_iteration": 236,
+  "rewards_sum": 370.9828,
+  "highest_reward": 0.4193
+}

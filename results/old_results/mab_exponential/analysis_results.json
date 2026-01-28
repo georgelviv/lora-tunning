@@ -1,0 +1,10 @@
+{
+  "time_diff": 533,
+  "high_rewards": 0,
+  "convergence_iteration": null,
+  "rewards_sum": 63.71719999999999,
+  "highest_reward": 0.3438,
+  "algorithm": "mab_exponential",
+  "environment": "old-results",
+  "algorithm_configs": {}
+}

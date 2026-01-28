@@ -1,0 +1,10 @@
+{
+  "time_diff": 75,
+  "high_rewards": 3,
+  "convergence_iteration": null,
+  "rewards_sum": 15.569,
+  "highest_reward": 0.4073,
+  "algorithm": "ucb",
+  "environment": "old-results",
+  "algorithm_configs": {}
+}

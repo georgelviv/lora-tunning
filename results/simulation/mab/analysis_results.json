@@ -5,8 +5,8 @@
     "epsilon": 0.9
   },
   "time_diff": 4,
-  "high_rewards": 102,
+  "high_rewards": 79,
   "convergence_iteration": null,
-  "rewards_sum": 173.93019999999999,
-  "highest_reward": 0.4503
+  "rewards_sum": 170.93,
+  "highest_reward": 0.4468
 }

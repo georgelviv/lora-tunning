@@ -1,0 +1,10 @@
+{
+  "time_diff": 6,
+  "high_rewards": 515,
+  "convergence_iteration": 49,
+  "rewards_sum": 407.8254,
+  "highest_reward": 0.6763,
+  "algorithm": "gradient",
+  "environment": "old-results",
+  "algorithm_configs": {}
+}
