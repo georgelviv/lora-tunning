@@ -10,11 +10,12 @@ class MultiArmedBanditRewardExponential(MultiArmedBanditDecay):
   def configs(self) -> Dict[str, float]:
     return {
       'epsilon': self.epsilon,
-      'alpha': self.alpha
+      'alpha': self.alpha,
+      'decay': self.decay
     }
 
-  def __init__(self, epsilon=0.9, alpha=0.3):
-    super().__init__(epsilon=epsilon)
+  def __init__(self, epsilon=0.9, decay=0.995, alpha=0.3):
+    super().__init__(epsilon=epsilon, decay=decay)
     self.alpha = alpha
   
   def compute_reward(self, old_value: float, new_value: float, *args, **kwargs) -> float:

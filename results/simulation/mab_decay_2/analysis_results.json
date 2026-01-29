@@ -1,0 +1,13 @@
+{
+  "time_diff": 3,
+  "high_rewards": 0,
+  "convergence_iteration": null,
+  "rewards_sum": 216.2754,
+  "highest_reward": 0.2837,
+  "algorithm": "mab_decay",
+  "environment": "simulation",
+  "algorithm_configs": {
+    "epsilon": 0.8,
+    "decay": 0.995
+  }
+}

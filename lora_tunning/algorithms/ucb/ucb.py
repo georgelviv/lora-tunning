@@ -19,14 +19,15 @@ class UCB(MultiArmedBanditRewardExponential):
     return {
       'epsilon': self.epsilon,
       'alpha': self.alpha,
-      'exploration_factor': self.exploration_factor
+      'exploration_factor': self.exploration_factor,
+      'decay': self.decay
     }
 
-  def __init__(self, epsilon=0.9,
+  def __init__(self, epsilon=0.9, decay=0.995,
                alpha=0.3, exploration_factor=0.2):
 
     self.exploration_factor = exploration_factor
-    super().__init__(epsilon=epsilon, alpha=alpha)
+    super().__init__(epsilon=epsilon, decay=decay, alpha=alpha)
 
     self.ucb_df = pd.DataFrame(
       columns=["SF", "BW", "CR", "IH", "count", "reward", "ucb"]

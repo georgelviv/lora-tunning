@@ -42,6 +42,7 @@ class Args(TypedDict):
   alg: ArgAlg
   iterations: int
   epsilon: float
+  decay: float
   alpha: float
   exploration_factor: float
   has_delays: bool

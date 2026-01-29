@@ -32,6 +32,7 @@ Multi Armed Bandit with Decay. To use this algorithm, run:
 
 Configurations:
 `--epsilon` - epsilon value. Default `0.9`
+`--decay` - decay epsilon with every iteration. Default `0.995`
 
 ### MAB Exponential
 Multi Armed Bandit with exponential reward. To use this algorithm, run:
@@ -39,7 +40,8 @@ Multi Armed Bandit with exponential reward. To use this algorithm, run:
 
 Configurations:
 `--epsilon` - epsilon value. Default `0.9`
-`--alpha` - decay with every iteration value. Default `0.3`
+`--decay` - decay epsilon with every iteration. Default `0.995`
+`--alpha` - value of new rewards are move valuable. Default `0.3`
 
 ### UCB
 Upper Confidence Bound. To use this algorithm, run:
@@ -47,6 +49,7 @@ Upper Confidence Bound. To use this algorithm, run:
 
 Configurations:
 `--epsilon` - epsilon for secondary action. Default `0.9`
+`--decay` - decay epsilon with every iteration. Default `0.995`
 `--alpha` - decay with every iteration value. Default `0.3`
 `--exploration_factor` - exploration factor value. Default `0.2`
 

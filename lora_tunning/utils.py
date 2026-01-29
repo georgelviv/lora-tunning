@@ -17,6 +17,7 @@ def read_args() -> Args:
   parser.add_argument("--port", type=str, default='/dev/cu.usbserial') 
   parser.add_argument('--alg', type=str, default='mab')
   parser.add_argument('--iterations', type=int, default=1000)
+  parser.add_argument('--decay', type=float, default=0.995)
   parser.add_argument('--epsilon', type=float, default=0.9)
   parser.add_argument('--alpha', type=float, default=0.3)
   parser.add_argument('--exploration_factor', type=float, default=0.2)
@@ -38,6 +39,7 @@ def read_args() -> Args:
     'alg': ArgAlg(args.alg),
     'iterations': args.iterations,
     'epsilon': args.epsilon,
+    'decay': args.decay,
     'alpha': args.alpha,
     'exploration_factor': args.exploration_factor,
     'has_delays': args.has_delays,
@@ -71,15 +73,16 @@ def get_alg(logger: logging.Logger, backend: LoraBase, args: Args) -> Algorithm:
   alg: ArgAlg = args['alg']
   epsilon: float = args['epsilon']
   alpha: float = args['alpha']
+  decay: float = args['decay']
   exploration_factor: float = args['exploration_factor']
 
   if alg == ArgAlg.mab:
     algorithm: Algorithm = MultiArmedBandit(epsilon=epsilon)
   elif alg == ArgAlg.mab_decay:
-    algorithm: Algorithm = MultiArmedBanditDecay(epsilon=epsilon)
+    algorithm: Algorithm = MultiArmedBanditDecay(epsilon=epsilon, decay=decay)
   elif alg == ArgAlg.mab_exponential:
     algorithm: Algorithm = MultiArmedBanditRewardExponential(
-      epsilon=epsilon, alpha=alpha
+      epsilon=epsilon, decay=decay, alpha=alpha
     )
   elif alg == ArgAlg.ucb:
     algorithm: Algorithm = UCB(

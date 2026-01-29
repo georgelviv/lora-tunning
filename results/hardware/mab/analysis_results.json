@@ -2,11 +2,11 @@
   "algorithm": "mab",
   "environment": "hardware",
   "algorithm_configs": {
-    "epsilon": 0.9
+    "epsilon": 0.8
   },
-  "time_diff": 9850,
-  "high_rewards": 427,
-  "convergence_iteration": 49,
-  "rewards_sum": 291.8366,
-  "highest_reward": 0.4817
+  "time_diff": 5316,
+  "high_rewards": 221,
+  "convergence_iteration": 604,
+  "rewards_sum": 309.4397,
+  "highest_reward": 0.4837
 }

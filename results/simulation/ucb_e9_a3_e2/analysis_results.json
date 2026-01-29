@@ -1,0 +1,14 @@
+{
+  "time_diff": 5,
+  "high_rewards": 173,
+  "convergence_iteration": 980,
+  "rewards_sum": 238.37040000000002,
+  "highest_reward": 0.4734,
+  "algorithm": "ucb",
+  "environment": "simulation",
+  "algorithm_configs": {
+    "epsilon": 0.01,
+    "alpha": 0.3,
+    "exploration_factor": 0.2
+  }
+}
